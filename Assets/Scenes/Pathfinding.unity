@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 389593627}
   m_Layer: 0
   m_Name: Tracker
-  m_TagString: Untagged
+  m_TagString: Tracker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -220,37 +220,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1
---- !u!1 &753838953
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 753838954}
-  m_Layer: 0
-  m_Name: Node
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &753838954
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 753838953}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8779516, y: 0.28674632, z: -9.943001}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1071692476
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,7 +356,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75513a5c288a1be40ad0681c285e96b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walls: {fileID: 2576371328553122915, guid: 53dc11340e7b5b740827b7b3c14b2335, type: 3}
+  obstacle: {fileID: 2576371328553122915, guid: 53dc11340e7b5b740827b7b3c14b2335, type: 3}
+  node: {fileID: 5870823132573390670, guid: 4d4ea7f40bea2864ba3969ca194bdfad, type: 3}
+  targetPos: {x: 0, y: 0}
 --- !u!1 &1304559768
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,7 +371,7 @@ GameObject:
   - component: {fileID: 1304559769}
   m_Layer: 0
   m_Name: Target
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -480,4 +451,3 @@ SceneRoots:
   - {fileID: 1279529627}
   - {fileID: 389593626}
   - {fileID: 1304559770}
-  - {fileID: 753838954}
