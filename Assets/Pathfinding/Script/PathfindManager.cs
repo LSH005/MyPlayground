@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,13 +8,23 @@ public class PathfindManager : MonoBehaviour
     public GameObject node;
     public readonly int maxAttempts = 500;
     public Vector2 targetPos;
+    public Vector2 trackerPos;
+    public Vector2 currentBacktracingPoint;
 
     public static int nodeId;
     public static List<NodeMovement> allQualifiedNodes = new List<NodeMovement>();
 
-    private NodeMovement parentNode;
+    private float nodeSpacing;
     private bool isActivating = false;
-
+    private bool isArrival = false;
+    private NodeMovement parentNode;
+    private readonly Vector2[] directions = new Vector2[]
+    {
+        Vector2.up,
+        Vector2.right,
+        Vector2.down,
+        Vector2.left
+    };
 
     void Update()
     {
@@ -32,10 +42,11 @@ public class PathfindManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 nodeId = 1;
-
                 isActivating = true;
+                allQualifiedNodes.Clear();
 
                 GameObject trackerObject = GameObject.FindWithTag("Tracker");
+                trackerPos = trackerObject.transform.position;
                 if (trackerObject != null)
                 {
                     GameObject newNode = Instantiate(node, trackerObject.transform.position, Quaternion.identity);
@@ -43,18 +54,19 @@ public class PathfindManager : MonoBehaviour
                     if (nodeMovementScript != null)
                     {
                         nodeMovementScript.id = nodeId;
+                        nodeSpacing = nodeMovementScript.nodeSpacing/2f;
                         nodeMovementScript.isStartPoint = true;
                         nodeId++;
                     }
                     else
                     {
-                        Debug.LogError("ÇÁ¸®ÆÕ¿¡ NodeMovement ½ºÅ©¸³Æ® ¾øÀ½");
+                        Debug.LogError("í”„ë¦¬íŒ¹ì— NodeMovement ìŠ¤í¬ë¦½íŠ¸ ì—†ìŒ");
                     }
 
                 }
                 else
                 {
-                    Debug.LogError("Tracker ÅÂ±×¸¦ °¡Áø ¿ÀºêÁ§Æ® ¾øÀ½");
+                    Debug.LogError("Tracker íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ ì—†ìŒ");
                 }
 
                 GameObject targetObject = GameObject.FindWithTag("Target");
@@ -64,18 +76,19 @@ public class PathfindManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("Target ÅÂ±×¸¦ °¡Áø ¿ÀºêÁ§Æ® ¾øÀ½");
+                    Debug.LogError("Target íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ ì—†ìŒ");
                 }
 
 
                 int attempts = 0;
+                isArrival = false;
                 while (attempts <= maxAttempts)
                 {
                     attempts++;
 
                     if (allQualifiedNodes.Count == 0)
                     {
-                        Debug.LogError("Çã¿ëµÈ ºÎ¸ğ ³ëµå ¾øÀ½");
+                        Debug.LogError("í—ˆìš©ëœ ë¶€ëª¨ ë…¸ë“œ ì—†ìŒ");
                         break;
                     }
 
@@ -93,10 +106,10 @@ public class PathfindManager : MonoBehaviour
                     FindClosestNodeToTarget();
                     if (parentNode != null)
                     {
-                        if (parentNode.id <= nodeId)
-                        {
+                        //if (parentNode.id <= nodeId)
+                        //{
 
-                        }
+                        //}
 
                         parentNode.SummonNode();
                         nodeId++;
@@ -106,28 +119,94 @@ public class PathfindManager : MonoBehaviour
                         foreach (NodeMovement node in allQualifiedNodes)
                         {
                             distance = Vector2.Distance(node.transform.position, targetPos);
-                            if (distance < parentNode.nodeSpacing - 0.01f)
+                            if (distance < parentNode.nodeSpacing)
                             {
+                                node.isEndPoint = true;
                                 node.parented= true;
                                 isEndPoint=true;
                                 break;
                             }
                         }
-                        if (isEndPoint) break;
+
+                        if (isEndPoint)
+                        {
+                            isArrival = true;
+                            break;
+                        }
+
                     }
                 }
 
-                NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
-                foreach (NodeMovement node in allNodes)
+                if (isArrival)
                 {
-                    if (!node.parented)
+                    //NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+                    //foreach (NodeMovement node in allNodes)
+                    //{
+                    //    if (!node.parented)
+                    //    {
+                    //        Destroy(node.gameObject);
+                    //    }
+                    //}
+
+                    NodeMovement[] remainingNodes = FindObjectsOfType<NodeMovement>();
+                    List<NodeMovement> remainingNodeList = new List<NodeMovement>(remainingNodes);
+
+                    NodeMovement currentNode = FindNodeInRadius(targetPos, nodeSpacing, remainingNodes);
+                    if (currentNode == null)
                     {
-                        Destroy(node.gameObject);
+                        Debug.LogError("ëª©í‘œ ì§€ì ì— í•´ë‹¹í•˜ëŠ” ë…¸ë“œ ì—†ìŒ");
+                        return;
+                    }
+                    else
+                    {
+                        currentNode.isRoad = true;
+                        remainingNodeList.Remove(currentNode);
+                    }
+
+                    while (currentNode != null && !currentNode.isStartPoint)
+                    {
+                        NodeMovement parentNode = null;
+                        foreach (NodeMovement node in remainingNodeList)
+                        {
+                            if (
+                                node.id == currentNode.parentId&&
+                                node.parented&&
+                                Vector2.Distance(node.transform.position, currentNode.transform.position) <= nodeSpacing * 2
+                                )
+                            {
+                                parentNode = node;
+                                break;
+                            }
+                        }
+
+                        if (parentNode == null)
+                        {
+                            Debug.LogError($"ID ê°€ {currentNode.parentId} ì¸ ë…¸ë“œ ì—†ìŒ");
+                            break;
+                        }
+                        else
+                        {
+                            currentNode = parentNode;
+                            currentNode.isRoad = true;
+                            remainingNodeList.Remove(currentNode);
+                        }
+
+                        currentNode = parentNode;
+                    }
+
+
+
+                    
+
+                    NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+                    foreach (NodeMovement node in allNodes)
+                    {
+                        if (!node.isRoad)
+                        {
+                            Destroy(node.gameObject);
+                        }
                     }
                 }
-
-
-
             }
 
             if (Input.GetMouseButton(0))
@@ -140,11 +219,23 @@ public class PathfindManager : MonoBehaviour
         }
     }
 
+    private NodeMovement FindNodeInRadius(Vector2 position, float radius, NodeMovement[] nodes)
+    {
+        foreach (NodeMovement node in nodes)
+        {
+            if (Vector2.Distance(node.transform.position, position) <= radius)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
     private void FindClosestNodeToTarget()
     {
         if (allQualifiedNodes.Count == 0)
         {
-            Debug.LogWarning("³ëµå ¾øÀ½");
+            Debug.LogWarning("ë…¸ë“œ ì—†ìŒ");
             return;
         }
 

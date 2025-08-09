@@ -5,7 +5,7 @@ using UnityEngine;
 public class NodeMovement : MonoBehaviour
 {
     public int id;
-    public bool parentalAuthority = true;
+    public int parentId;
     public bool parented = false;
     public bool isRoad = false;
     public bool isStartPoint = false;
@@ -31,7 +31,8 @@ public class NodeMovement : MonoBehaviour
         }
 
         PathfindManager.allQualifiedNodes.Add(this);
-    }
+        isStartPoint = false;
+}
 
     public void PermissionsUpdate()
     {
@@ -71,8 +72,7 @@ public class NodeMovement : MonoBehaviour
             }
         }
 
-        parentalAuthority = hasEmptySpace;
-        if (!parentalAuthority)
+        if (!hasEmptySpace)
         {
             PathfindManager.allQualifiedNodes.Remove(this);
         }
@@ -98,14 +98,13 @@ public class NodeMovement : MonoBehaviour
 
             if (!foundObstacleOrNode)
             {
-                GameObject newGameObject = Instantiate(newNode, spawnPosition, Quaternion.identity);
+                GameObject node = Instantiate(newNode, spawnPosition, Quaternion.identity);
 
-                NodeMovement newNodeScript = newGameObject.GetComponent<NodeMovement>();
+                NodeMovement newNodeScript = node.GetComponent<NodeMovement>();
                 if (newNodeScript != null)
                 {
                     newNodeScript.id = PathfindManager.nodeId;
-                    // PathfindManager.nodeId++;
-                    // 정적 변수로 변경함에 따라 이곳에서 id가 바뀌지 않음
+                    newNodeScript.parentId = id;
                 }
             }
         }
