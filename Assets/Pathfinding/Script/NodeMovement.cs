@@ -6,7 +6,10 @@ public class NodeMovement : MonoBehaviour
 {
     public int id;
     public bool parentalAuthority = true;
+    public bool parented = false;
     public bool isRoad = false;
+    public bool isStartPoint = false;
+    public bool isEndPoint = false;
     public float nodeSpacing = 1f;
     public GameObject newNode;
 
@@ -107,7 +110,7 @@ public class NodeMovement : MonoBehaviour
             }
         }
 
-        isRoad = true;
+        parented = true;
     }
 
     private void OnDestroy()

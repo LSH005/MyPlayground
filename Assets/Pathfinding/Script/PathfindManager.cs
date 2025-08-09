@@ -9,7 +9,7 @@ public class PathfindManager : MonoBehaviour
     public readonly int maxAttempts = 500;
     public Vector2 targetPos;
 
-    public static int nodeId = 1;
+    public static int nodeId;
     public static List<NodeMovement> allQualifiedNodes = new List<NodeMovement>();
 
     private NodeMovement parentNode;
@@ -31,17 +31,19 @@ public class PathfindManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                nodeId = 1;
+
                 isActivating = true;
 
                 GameObject trackerObject = GameObject.FindWithTag("Tracker");
                 if (trackerObject != null)
                 {
                     GameObject newNode = Instantiate(node, trackerObject.transform.position, Quaternion.identity);
-
                     NodeMovement nodeMovementScript = newNode.GetComponent<NodeMovement>();
                     if (nodeMovementScript != null)
                     {
                         nodeMovementScript.id = nodeId;
+                        nodeMovementScript.isStartPoint = true;
                         nodeId++;
                     }
                     else
@@ -64,6 +66,7 @@ public class PathfindManager : MonoBehaviour
                 {
                     Debug.LogError("Target 태그를 가진 오브젝트 없음");
                 }
+
 
                 int attempts = 0;
                 while (attempts <= maxAttempts)
@@ -90,25 +93,41 @@ public class PathfindManager : MonoBehaviour
                     FindClosestNodeToTarget();
                     if (parentNode != null)
                     {
+                        if (parentNode.id <= nodeId)
+                        {
+
+                        }
+
                         parentNode.SummonNode();
                         nodeId++;
 
-                        float distance = Vector2.Distance(parentNode.transform.position, targetPos);
-                        if (distance <= parentNode.nodeSpacing)
+                        float distance = 0;
+                        bool isEndPoint = false;
+                        foreach (NodeMovement node in allQualifiedNodes)
                         {
-                            break;
+                            distance = Vector2.Distance(node.transform.position, targetPos);
+                            if (distance < parentNode.nodeSpacing - 0.01f)
+                            {
+                                node.parented= true;
+                                isEndPoint=true;
+                                break;
+                            }
                         }
+                        if (isEndPoint) break;
                     }
                 }
 
                 NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
                 foreach (NodeMovement node in allNodes)
                 {
-                    if (!node.isRoad)
+                    if (!node.parented)
                     {
                         Destroy(node.gameObject);
                     }
                 }
+
+
+
             }
 
             if (Input.GetMouseButton(0))
