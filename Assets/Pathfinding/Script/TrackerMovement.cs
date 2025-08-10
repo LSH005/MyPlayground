@@ -4,9 +4,10 @@ using UnityEngine;
 public class TrackerMovement : MonoBehaviour
 {
     public float moveSpeed = 1f;
-    public bool canMove = false;
+    public bool canNodeSkip = false;
 
     private int trackingNodeIndex;
+    private bool canMove = false;
     private List<NodeMovement> allRoadNodes = new List<NodeMovement>();
     private NodeMovement[] allNodes;
     private Vector2 targetPos;
@@ -16,7 +17,7 @@ public class TrackerMovement : MonoBehaviour
     {
         if (canMove)
         {
-            if (Vector2.Distance(transform.position, targetPos) < 0.1f)
+            if (Vector2.Distance(transform.position, targetPos) < moveSpeed / 100f)
             {
                 transform.position = allRoadNodes[trackingNodeIndex].transform.position;
                 trackingNodeIndex++;

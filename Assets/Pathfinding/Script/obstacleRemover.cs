@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider2D))] // 이 스크립트가 붙을 오브젝트에 BoxCollider2D를 강제
-public class ObstacleChecker : MonoBehaviour
+public class obstacleRemover : MonoBehaviour
 {
     private BoxCollider2D boxCollider;
 
@@ -21,7 +21,6 @@ public class ObstacleChecker : MonoBehaviour
         else
         {
             boxCollider.size = originalSize;
-            Destroy(this);
         }
     }
 }

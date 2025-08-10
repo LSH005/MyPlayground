@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class PathfindManager : MonoBehaviour
 {
     [Header("Setting")]
-    public readonly int maxAttempts = 500;
+    public int maxAttempts = 500;
     public bool showRoad = false;
     public bool doRemoveRedundantRoad = true;
     public bool doCleanUpNodes = true;
@@ -106,10 +106,22 @@ public class PathfindManager : MonoBehaviour
 
             if (Input.GetMouseButton(0))
             {
-                Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                mousePosition.z = 0f;
-
-                Instantiate(obstacle, mousePosition, Quaternion.identity);
+                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                if (Input.GetKey(KeyCode.D))
+                {
+                    Collider2D[] obstacles = Physics2D.OverlapCircleAll(mousePosition, 0.05f);
+                    foreach (Collider2D obstacleCollider in obstacles)
+                    {
+                        if (obstacleCollider.CompareTag("obstacle") && obstacleCollider.GetComponent<obstacleRemover>() != null)
+                        {
+                            Destroy(obstacleCollider.gameObject);
+                        }
+                    }
+                }
+                else
+                {
+                    Instantiate(obstacle, mousePosition, Quaternion.identity);
+                }
             }
         }
 
@@ -358,11 +370,14 @@ public class PathfindManager : MonoBehaviour
             {
                 if (hit.collider.CompareTag("obstacle"))
                 {
-                    Debug.Log($"{currentCasterNodeIndex}번 (ID {allRoadNodes[currentCasterNodeIndex].id}) 노드에서 {targetNodeIndex}번 (ID {allRoadNodes[targetNodeIndex].id}) 노드로 가던 중 장애물 있음"); 
-                    currentCasterNodeIndex = targetNodeIndex - 1;
-                    targetNodeIndex = currentCasterNodeIndex + 2;
-                    isObstaclesFound = true;
-                    break;
+                    if (hit.distance < rayDistance)
+                    {
+                        Debug.Log($"{currentCasterNodeIndex}번 (ID {allRoadNodes[currentCasterNodeIndex].id}) 노드에서 {targetNodeIndex}번 (ID {allRoadNodes[targetNodeIndex].id}) 노드로 가던 중 장애물 있음");
+                        currentCasterNodeIndex = targetNodeIndex - 1;
+                        targetNodeIndex = currentCasterNodeIndex + 2;
+                        isObstaclesFound = true;
+                        break;
+                    }
                 }
             }
 
