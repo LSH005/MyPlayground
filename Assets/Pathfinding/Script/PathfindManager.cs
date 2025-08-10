@@ -6,7 +6,7 @@ public class PathfindManager : MonoBehaviour
 {
     [Header("Setting")]
     public readonly int maxAttempts = 500;
-    public bool showRoad = true;
+    public bool showRoad = false;
     public bool doRemoveRedundantRoad = true;
     public bool doCleanUpNodes = true;
     public bool moveTracker = true;
@@ -49,13 +49,22 @@ public class PathfindManager : MonoBehaviour
 
                     if (showRoad)
                     {
-                        RemoveRedundantRoadNodes();
-                        CleanUpNodes();
+                        if (doRemoveRedundantRoad) RemoveRedundantRoadNodes();
+                        if (doCleanUpNodes) CleanUpNodes();
                     }
                     else
                     {
-                        if (doRemoveRedundantRoad) RemoveRedundantRoadNodes();
-                        if (doCleanUpNodes) CleanUpNodes();
+                        NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+                        foreach (NodeMovement node in allNodes)
+                        {
+                            SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
+                            if (spriteRenderer != null)
+                            {
+                                spriteRenderer.enabled = false;
+                            }
+                        }
+                        RemoveRedundantRoadNodes();
+                        CleanUpNodes();
                     }
 
                     if (moveTracker)
@@ -82,6 +91,16 @@ public class PathfindManager : MonoBehaviour
                 else
                 {
                     Debug.LogError($"길이 없거나, 노드 {maxAttempts}개 이상으로 넓은 탐색 범위 구조가 있음.");
+                    NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+                    foreach (NodeMovement node in allNodes)
+                    {
+                        SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
+                        if (spriteRenderer != null)
+                        {
+                            spriteRenderer.color = Color.red;
+                        }
+                    }
+
                 }
             }
 
