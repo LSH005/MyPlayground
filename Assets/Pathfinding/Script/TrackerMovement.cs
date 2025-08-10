@@ -11,6 +11,7 @@ public class TrackerMovement : MonoBehaviour
     private List<NodeMovement> allRoadNodes = new List<NodeMovement>();
     private NodeMovement[] allNodes;
     private Vector2 targetPos;
+    private Vector2 previousPos;
     private Vector2 direction;
 
     private void Update()
@@ -36,6 +37,17 @@ public class TrackerMovement : MonoBehaviour
             }
 
             transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
+
+            if (Vector2.Distance(transform.position, targetPos) < Vector2.Distance(previousPos, targetPos))
+            {
+                previousPos = transform.position;
+            }
+            else
+            {
+                direction = (targetPos - (Vector2)transform.position).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle);
+            }
         }
     }
 
@@ -59,6 +71,7 @@ public class TrackerMovement : MonoBehaviour
         direction = (targetPos - (Vector2)transform.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
+        previousPos = transform.position;
 
         canMove = true;
 
