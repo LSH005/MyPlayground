@@ -281,7 +281,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -359,6 +359,8 @@ MonoBehaviour:
   obstacle: {fileID: 2576371328553122915, guid: 53dc11340e7b5b740827b7b3c14b2335, type: 3}
   node: {fileID: 5870823132573390670, guid: 4d4ea7f40bea2864ba3969ca194bdfad, type: 3}
   targetPos: {x: 0, y: 0}
+  trackerPos: {x: 0, y: 0}
+  currentBacktracingPoint: {x: 0, y: 0}
 --- !u!1 &1304559768
 GameObject:
   m_ObjectHideFlags: 0

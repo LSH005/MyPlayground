@@ -15,7 +15,7 @@ public class PathfindManager : MonoBehaviour
     public static List<NodeMovement> allQualifiedNodes = new List<NodeMovement>();
 
     private float nodeSpacing;
-    private bool isActivating = false;
+    private bool isActivated = false;
     private bool isArrival = false;
     private NodeMovement parentNode;
     private readonly Vector2[] directions = new Vector2[]
@@ -33,16 +33,12 @@ public class PathfindManager : MonoBehaviour
             SceneManager.LoadScene("Pathfinding");
         }
 
-        if (isActivating)
-        {
-
-        }
-        else
+        if (!isActivated)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 nodeId = 1;
-                isActivating = true;
+                isActivated = true;
                 allQualifiedNodes.Clear();
 
                 GameObject trackerObject = GameObject.FindWithTag("Tracker");
@@ -195,10 +191,55 @@ public class PathfindManager : MonoBehaviour
                     }
 
 
-
-                    
-
+                    List<NodeMovement> allRoadNodes = new List<NodeMovement>();
                     NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+                    foreach (NodeMovement node in allNodes)
+                    {
+                        if (node.isRoad)
+                        {
+                            allRoadNodes.Add(node);
+                        }
+                    }
+                    // ID 순으로 정렬
+                    allRoadNodes.Sort((a, b) => a.id.CompareTo(b.id));
+
+                    int endNodeIndex = allRoadNodes.Count - 1;
+                    int currentCasterNodeIndex = allRoadNodes[0].id - 1;
+                    int targetNodeIndex = currentCasterNodeIndex + 2;
+
+                    while (targetNodeIndex <= endNodeIndex)
+                    {
+                        Vector2 rayOrigin = allRoadNodes[currentCasterNodeIndex].transform.position;
+                        Vector2 rayTarget = allRoadNodes[targetNodeIndex].transform.position;
+
+                        Vector2 rayDirection = (rayTarget - rayOrigin).normalized;
+
+                        float rayDistance = Vector2.Distance(rayOrigin, rayTarget);
+
+                        RaycastHit2D[] allHits = Physics2D.CircleCastAll(rayOrigin, 0.3f, rayDirection, rayDistance);
+
+                        bool isObstaclesFound = false;
+                        foreach (RaycastHit2D hit in allHits)
+                        {
+                            if (hit.collider.CompareTag("obstacle"))
+                            {
+                                Debug.Log($"{currentCasterNodeIndex}번 (ID {allRoadNodes[currentCasterNodeIndex].id}) 노드에서 {targetNodeIndex}번 (ID {allRoadNodes[targetNodeIndex].id}) 노드로 가던 중 장애물 있음");
+                                currentCasterNodeIndex = targetNodeIndex - 1;
+                                targetNodeIndex = currentCasterNodeIndex + 2;
+                                isObstaclesFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!isObstaclesFound)
+                        {
+                            allRoadNodes[targetNodeIndex-1].isRoad = false;
+                            targetNodeIndex++;
+                        }
+                    }
+
+
+                    allNodes = FindObjectsOfType<NodeMovement>();
                     foreach (NodeMovement node in allNodes)
                     {
                         if (!node.isRoad)
