@@ -618,7 +618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxAttempts: 1000
-  showRoad: 0
+  showRoad: 1
   doRemoveRedundantRoad: 1
   doCleanUpNodes: 1
   moveTracker: 1
