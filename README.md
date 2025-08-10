@@ -2,7 +2,8 @@ Scene 설명 및 조작법
 
 # ScreenEffectsTest
 여러 가지 사진 모아두고 화면 필터 테스트한 곳
-조작법 없음
+
+조작법은 없음
 
 # Pathfinding
 길 찾기 시스템.
