@@ -14,6 +14,7 @@ public class NodeMovement : MonoBehaviour
     public GameObject newNode;
 
     private BoxCollider2D nodeCollider;
+    private SpriteRenderer spriteRenderer;
     private readonly Vector2[] directions = new Vector2[]
     {
         Vector2.up,
@@ -24,6 +25,8 @@ public class NodeMovement : MonoBehaviour
 
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         nodeCollider = GetComponent<BoxCollider2D>();
         if (nodeCollider == null)
         {
