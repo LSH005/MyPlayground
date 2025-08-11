@@ -12,6 +12,7 @@ public class NodeMovement : MonoBehaviour
     public bool isEndPoint = false;
     public float nodeSpacing = 1f;
     public GameObject newNode;
+    // NodeMovement 는 유저가 조작하도록 고려되지 않았음
 
     private BoxCollider2D nodeCollider;
     private readonly Vector2[] directions = new Vector2[]

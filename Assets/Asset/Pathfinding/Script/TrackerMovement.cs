@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class TrackerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public bool skipNodeTracking = false;
-    public float skipNodeTrackingPeriod = 0.25f;
+    [Header("설정")]
+    public float moveSpeed = 5f;    // 모르면 초등영어를 다시 배우고 와야 함, 그리고 코딩 접으셈.
+    [Header("노드 추적 중단 설정")]
+    public bool skipNodeTracking = false;   // 효율적인 이동을 위해 현재 노드 추적을 중단할지 여부 (이하 모든 주석에서 "노추중" 이라 칭함.)
+    public float skipNodeTrackingPeriod = 0f;    // 노추중의 계산 주기
+    public float skipNodeTrackingRange = 0.75f;    // 노추중을 하기 위해 다음 노드로부터 멀어져야 하는 최소 거리
 
     private int trackingNodeIndex;
     private float pastTime = 0;
@@ -36,6 +39,23 @@ public class TrackerMovement : MonoBehaviour
             {
                 Debug.LogError("위치 손실 발생");
                 UpdateDirection();
+            }
+
+            if (skipNodeTracking && trackingNodeIndex + 1 < allRoadNodes.Count && Vector2.Distance(transform.position, targetPos) > skipNodeTrackingRange)
+            {
+                if (skipNodeTrackingPeriod <= 0)
+                {
+                    SkipNodeTracking();
+                }
+                else
+                {
+                    pastTime += Time.deltaTime;
+                    if (skipNodeTrackingPeriod <= pastTime)
+                    {
+                        pastTime = 0;
+                        SkipNodeTracking();
+                    }
+                }
             }
         }
     }
@@ -106,5 +126,32 @@ public class TrackerMovement : MonoBehaviour
         }
         */
 
+    }
+    private void SkipNodeTracking()
+    {
+        Vector2 rayOrigin = transform.position;
+        Vector2 rayTarget = allRoadNodes[trackingNodeIndex + 1].transform.position;
+        Vector2 rayDirection = (rayTarget - rayOrigin).normalized;
+        float rayDistance = Vector2.Distance(rayOrigin, rayTarget);
+
+        RaycastHit2D[] allHits = Physics2D.CircleCastAll(rayOrigin, 0.25f, rayDirection, rayDistance);
+
+        bool isObstaclesFound = false;
+        foreach (RaycastHit2D hit in allHits)
+        {
+            if (hit.collider.CompareTag("obstacle"))
+            {
+                if (hit.distance < rayDistance)
+                {
+                    isObstaclesFound = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isObstaclesFound)
+        {
+            UpdateNextTarget();
+        }
     }
 }

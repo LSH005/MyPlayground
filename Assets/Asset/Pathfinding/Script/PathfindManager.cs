@@ -4,15 +4,16 @@ using UnityEngine.SceneManagement;
 
 public class PathfindManager : MonoBehaviour
 {
-    [Header("Setting")]
-    public int maxAttempts = 500;
-    public bool showRoad = false;
-    public bool doRemoveRedundantRoad = true;
-    public bool doCleanUpNodes = true;
-    public bool moveTracker = true;
-    [Header("Assets")]
+    [Header("설정")]
+    public int maxAttempts = 500;   // 노드를 확장할 수 있는 최대 시도 횟수
+    public bool showRoad = false;   // 길을 표시할지에 대한 여부
+    public bool doRemoveRedundantRoad = true;   // 특정한 비효율적인 노드를 무시할지에 대한 여부 (showRoad 가 꺼져 있다면 강제 작동)
+    public bool doCleanUpNodes = true;  // 무시되었거나, 길이 아닌 노드를 제거할지에 대한 여부 (showRoad 가 꺼져 있다면 강제 작동)
+    public bool moveTracker = true;    // 계산 완료된 길을 트래커가 이동할지에 대한 여부
+    [Header("프리팹")]
     public GameObject obstacle;
     public GameObject node;
+
     public static int nodeId;
     public static List<NodeMovement> allQualifiedNodes = new List<NodeMovement>();
 
@@ -50,22 +51,21 @@ public class PathfindManager : MonoBehaviour
 
                     if (showRoad)
                     {
-                        if (doRemoveRedundantRoad) RemoveRedundantRoadNodes();
-                        if (doCleanUpNodes) CleanUpNodes();
+                        if (doRemoveRedundantRoad)
+                        {
+                            RemoveRedundantRoadNodes();
+                        }
+                        if (doCleanUpNodes)
+                        {
+                            CleanUpNodes();
+                        }
+                        SetRoadNodeColor();
                     }
                     else
                     {
-                        NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
-                        foreach (NodeMovement node in allNodes)
-                        {
-                            SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
-                            if (spriteRenderer != null)
-                            {
-                                spriteRenderer.enabled = false;
-                            }
-                        }
                         RemoveRedundantRoadNodes();
                         CleanUpNodes();
+                        SetNodeInvisible();
                     }
 
                     if (moveTracker)
@@ -410,5 +410,37 @@ public class PathfindManager : MonoBehaviour
             }
         }
         Debug.Log("경로 확정함");
+    }
+
+    void SetRoadNodeColor()
+    {
+        NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+        foreach (NodeMovement node in allNodes)
+        {
+            if (node.isRoad)
+            {
+                SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
+
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.color = Color.blue;
+                }
+            }
+        }
+    }
+
+    void SetNodeInvisible()
+    {
+        NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
+
+        foreach (NodeMovement node in allNodes)
+        {
+            SpriteRenderer spriteRenderer = node.GetComponent<SpriteRenderer>();
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.enabled = false;
+            }
+        }
     }
 }
