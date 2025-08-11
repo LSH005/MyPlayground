@@ -131,8 +131,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 389593626}
-  - component: {fileID: 389593625}
   - component: {fileID: 389593627}
+  - component: {fileID: 389593625}
   m_Layer: 0
   m_Name: Tracker
   m_TagString: Tracker
@@ -220,7 +220,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  canNodeSkip: 0
+  skipNodeTracking: 0
+  skipNodeTrackingPeriod: 0.25
 --- !u!1 &632336426
 GameObject:
   m_ObjectHideFlags: 0

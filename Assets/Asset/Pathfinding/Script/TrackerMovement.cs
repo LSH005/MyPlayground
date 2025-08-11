@@ -3,10 +3,12 @@ using UnityEngine;
 
 public class TrackerMovement : MonoBehaviour
 {
-    public float moveSpeed = 1f;
-    public bool canNodeSkip = false;
+    public float moveSpeed = 5f;
+    public bool skipNodeTracking = false;
+    public float skipNodeTrackingPeriod = 0.25f;
 
     private int trackingNodeIndex;
+    private float pastTime = 0;
     private bool canMove = false;
     private List<NodeMovement> allRoadNodes = new List<NodeMovement>();
     private NodeMovement[] allNodes;
@@ -21,19 +23,7 @@ public class TrackerMovement : MonoBehaviour
             if (Vector2.Distance(transform.position, targetPos) < moveSpeed / 100f)
             {
                 transform.position = allRoadNodes[trackingNodeIndex].transform.position;
-                trackingNodeIndex++;
-
-                if (trackingNodeIndex >= allRoadNodes.Count)
-                {
-                    canMove = false;
-                    Debug.Log("추적 종료");
-                    return;
-                }
-
-                targetPos = allRoadNodes[trackingNodeIndex].transform.position;
-                direction = (targetPos - (Vector2)transform.position).normalized;
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0, 0, angle);
+                UpdateNextTarget();
             }
 
             transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
@@ -44,11 +34,32 @@ public class TrackerMovement : MonoBehaviour
             }
             else
             {
-                direction = (targetPos - (Vector2)transform.position).normalized;
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0, 0, angle);
+                Debug.LogError("위치 손실 발생");
+                UpdateDirection();
             }
         }
+    }
+
+    private void UpdateNextTarget()
+    {
+        trackingNodeIndex++;
+
+        if (trackingNodeIndex >= allRoadNodes.Count)
+        {
+            canMove = false;
+            Debug.Log("추적 종료");
+            return;
+        }
+
+        targetPos = allRoadNodes[trackingNodeIndex].transform.position;
+        UpdateDirection();
+    }
+
+    private void UpdateDirection()
+    {
+        direction = (targetPos - (Vector2)transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     public void TrackingNode()
@@ -65,7 +76,6 @@ public class TrackerMovement : MonoBehaviour
         allRoadNodes.Sort((a, b) => a.id.CompareTo(b.id));
 
         trackingNodeIndex = 0;
-
         targetPos = allRoadNodes[trackingNodeIndex].transform.position;
 
         direction = (targetPos - (Vector2)transform.position).normalized;
