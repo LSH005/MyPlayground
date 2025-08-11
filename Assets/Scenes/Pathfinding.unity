@@ -617,7 +617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75513a5c288a1be40ad0681c285e96b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAttempts: 1000
+  maxAttempts: 1500
   showRoad: 0
   doRemoveRedundantRoad: 1
   doCleanUpNodes: 1

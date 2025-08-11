@@ -16,6 +16,7 @@ public class PathfindManager : MonoBehaviour
     public static int nodeId;
     public static List<NodeMovement> allQualifiedNodes = new List<NodeMovement>();
 
+    private int attempts;
     private float nodeSpacing;
     private bool isActivated = false;
     private bool isArrival = false;
@@ -90,7 +91,16 @@ public class PathfindManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError($"길이 없거나, 노드 {maxAttempts}개 이상으로 넓은 탐색 범위 구조가 있음.");
+
+                    if (attempts >= maxAttempts)
+                    {
+                        Debug.LogError($"노드 {maxAttempts}개 이상으로 넓은 탐색 범위 구조가 있거나 길이 없음");
+                    }
+                    else
+                    {
+                        Debug.LogError($"길이 없음");
+                    }
+                    
                     NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
                     foreach (NodeMovement node in allNodes)
                     {
@@ -212,7 +222,7 @@ public class PathfindManager : MonoBehaviour
 
     void PathFind()
     {
-        int attempts = 0;
+        attempts = 0;
         isArrival = false;
         while (attempts <= maxAttempts)
         {
