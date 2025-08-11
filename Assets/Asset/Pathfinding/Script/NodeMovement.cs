@@ -15,6 +15,7 @@ public class NodeMovement : MonoBehaviour
     // NodeMovement 는 유저가 조작하도록 고려되지 않았음
 
     private BoxCollider2D nodeCollider;
+    private SpriteRenderer spriteRenderer;
     private readonly Vector2[] directions = new Vector2[]
     {
         Vector2.up,
@@ -25,7 +26,7 @@ public class NodeMovement : MonoBehaviour
 
     private void Awake()
     {
-
+        spriteRenderer = GetComponent<SpriteRenderer>();
         nodeCollider = GetComponent<BoxCollider2D>();
         if (nodeCollider == null)
         {
@@ -77,6 +78,7 @@ public class NodeMovement : MonoBehaviour
         if (!hasEmptySpace)
         {
             PathfindManager.allQualifiedNodes.Remove(this);
+            spriteRenderer.color = new Color32(85, 27, 161, 255); // 보라색
         }
     }
 

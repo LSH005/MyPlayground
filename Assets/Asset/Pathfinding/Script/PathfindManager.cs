@@ -382,7 +382,7 @@ public class PathfindManager : MonoBehaviour
                 {
                     if (hit.distance < rayDistance)
                     {
-                        Debug.Log($"{currentCasterNodeIndex}번 (ID {allRoadNodes[currentCasterNodeIndex].id}) 노드에서 {targetNodeIndex}번 (ID {allRoadNodes[targetNodeIndex].id}) 노드로 가던 중 장애물 있음");
+                        Debug.Log($"{currentCasterNodeIndex}번 길 (ID {allRoadNodes[currentCasterNodeIndex].id}) 노드에서 {targetNodeIndex}번 길 (ID {allRoadNodes[targetNodeIndex].id}) 노드로 가던 중 장애물 있음");
                         currentCasterNodeIndex = targetNodeIndex - 1;
                         targetNodeIndex = currentCasterNodeIndex + 2;
                         isObstaclesFound = true;
@@ -423,7 +423,7 @@ public class PathfindManager : MonoBehaviour
 
                 if (spriteRenderer != null)
                 {
-                    spriteRenderer.color = Color.blue;
+                    spriteRenderer.color = Color.white;
                 }
             }
         }
