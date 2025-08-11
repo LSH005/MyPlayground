@@ -98,7 +98,7 @@ public class PathfindManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError($"길이 없음");
+                        Debug.LogError($"길이 없거나, 길이 너무 좁음");
                     }
                     
                     NodeMovement[] allNodes = FindObjectsOfType<NodeMovement>();
