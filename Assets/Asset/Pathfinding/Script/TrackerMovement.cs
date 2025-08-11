@@ -151,7 +151,7 @@ public class TrackerMovement : MonoBehaviour
 
         if (!isObstaclesFound)
         {
-            Debug.Log($"{trackingNodeIndex}번 길 (ID {allRoadNodes[trackingNodeIndex].id}) 노드에서 {trackingNodeIndex+1}번 길 (ID {allRoadNodes[trackingNodeIndex+1].id}) 노드로 가는 도중 더 좋은 직선을 찾음.");
+            Debug.Log($"{trackingNodeIndex-1}번 길 (ID {allRoadNodes[trackingNodeIndex-1].id}) 노드에서 {trackingNodeIndex}번 길 (ID {allRoadNodes[trackingNodeIndex].id}) 노드로 가는 도중 {trackingNodeIndex+1}번 길 (ID {allRoadNodes[trackingNodeIndex+1].id}) 노드로 가는 직선을 찾음.");
 
             UpdateNextTarget();
         }
