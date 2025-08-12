@@ -5,66 +5,61 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
-
-    public float jumpForce = 15f; // 점프 힘
-    public float coyoteTime = 0.25f; // 코요테 타임
-    public Transform groundCheck; // 바닥을 감지할 위치
-    public LayerMask groundLayer; // 바닥으로 인식할 레이어
-    public float groundCheckRadius = 0.2f; // 바닥 감지 원의 반지름
+    public float jumpForce = 15f;
+    public float coyoteTime = 0.1f; // 코요테 타임 지속 시간
+    public Transform groundCheck;
+    public LayerMask groundLayer;
+    public float groundCheckRadius = 0.2f;
 
     private float moveInput;
-    public float coyote;
-    private bool isGrounded;
-    private bool isAfterCoyoteTime;
     private bool isFacingRight = true;
     private Rigidbody2D rb;
+    private Animator anim;
+
+    private float coyoteTimeCounter; // 코요테 타임 카운터
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            SceneManager.LoadScene("PlayerMovement");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        moveInput = Input.GetAxisRaw("Horizontal");
-
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        if (isGrounded)
+        if (Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer))
         {
-            coyote = 0f;
-            isAfterCoyoteTime = false;
+            coyoteTimeCounter = coyoteTime;
+            anim.SetBool("isJumping", false);
         }
-        else if (coyote <= coyoteTime)
+        else
         {
-            coyote += Time.deltaTime;
-            if (coyote >= coyoteTime)
+            coyoteTimeCounter -= Time.deltaTime;
+            if (coyoteTimeCounter <= 0f)
             {
-                isAfterCoyoteTime = true;
+                anim.SetBool("isJumping", true);
             }
         }
 
-        if (Input.GetKey(KeyCode.Space) && !isAfterCoyoteTime)
+        if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
-            rb.velocity = new Vector2(rb.velocity.x, 0);
-            rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
-
-            coyote = coyoteTime;
-            isAfterCoyoteTime = true;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            coyoteTimeCounter = 0f;
+            anim.SetBool("isJumping", true);
         }
 
-        if (moveInput > 0 && !isFacingRight)
-        {
-            Flip();
-        }
-        else if (moveInput < 0 && isFacingRight)
-        {
-            Flip();
-        }
+
+        moveInput = Input.GetAxisRaw("Horizontal");
+
+        
+        anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
+
+        if (moveInput > 0 && !isFacingRight) Flip();
+        else if (moveInput < 0 && isFacingRight) Flip();
     }
 
     void FixedUpdate()
@@ -75,8 +70,6 @@ public class PlayerController : MonoBehaviour
     void Flip()
     {
         isFacingRight = !isFacingRight;
-        Vector3 scaler = transform.localScale;
-        scaler.x *= -1;
-        transform.localScale = scaler;
+        transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
     }
 }
