@@ -850,7 +850,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 15
   jumpForce: 20
-  coyoteTime: 0.15
+  coyoteTime: 0.1
   groundCheck: {fileID: 1496813529}
   groundLayer:
     serializedVersion: 2

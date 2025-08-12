@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/KeyPad.unity
     guid: 5bbfc6289220e78439727634735f4691
+  - enabled: 1
+    path: Assets/Scenes/PlayerMovement.unity
+    guid: cb0eb0b8a7fbf6740be8d3af5cb831e0
   m_configObjects: {}
