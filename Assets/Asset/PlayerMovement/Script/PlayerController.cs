@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private float AirborneTimeCounter = 0;
     private float moveInput;
     private float afterMoveInput = 0f;
-    private bool isAirborne = true;
+    private bool isAirborne = false;
     private bool isGrounded = true;
     private bool canWallRun = false;
     private bool isTouchingWall = false;
@@ -79,6 +79,15 @@ public class PlayerController : MonoBehaviour
 
         anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
 
+        if (anim.GetBool("isRunning"))
+        {
+            afterMoveInput = 0;
+        }
+        else
+        {
+            afterMoveInput += Time.deltaTime;
+        }
+
         if (wallRunStiffnessTimeCounter > 0)
         {
             canWallRun = false;
@@ -91,35 +100,27 @@ public class PlayerController : MonoBehaviour
 
         if (AirborneTimeCounter > 0)
         {
+            isAirborne = true;
             AirborneTimeCounter -= Time.deltaTime;
             if (isCrashingWall)
             {
-                isAirborne = true;
+                isAirborne = false;
                 AirborneTimeCounter = 0;
             }
             if (AirborneTimeCounter <= 0 && anim.GetBool("isRunning"))
             {
-                isAirborne = true;
+                isAirborne = false;
             }
         }
-        else if (!isAirborne && anim.GetBool("isRunning") || !isAirborne && isCrashingWall)
+        else if (isAirborne && (anim.GetBool("isRunning") || isCrashingWall || isGrounded))
         {
-            isAirborne = true;
+            isAirborne = false;
         }
 
-        if (isAirborne)
+        if (!isAirborne)
         {
             if (moveInput > 0 && !isFacingRight) Flip();
             else if (moveInput < 0 && isFacingRight) Flip();
-        }
-
-        if (anim.GetBool("isRunning"))
-        {
-            afterMoveInput = 0;
-        }
-        else
-        {
-            afterMoveInput += Time.deltaTime;
         }
         
         if (isGrounded)
@@ -140,11 +141,20 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            var vel = rb.velocity;
+            vel.y = jumpForce;
+            rb.velocity = vel;
+
             coyoteTimeCounter = 0f;
             SetWallRunStiffness(0.2f);
-            SetAirborne(0f);
-            anim.SetBool("isSliding", false);
+            SetAirborne(0f, false);
+
+            anim.SetBool("isJumping", true);
+
+            if (anim.GetBool("isSliding"))
+            {
+                anim.SetBool("isSliding", false);
+            }
         }
 
         if (anim.GetBool("isSliding"))
@@ -160,7 +170,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (isTouchingWall && anim.GetBool("isJumping") && !anim.GetBool("isWallKicking") && isAirborne && canWallRun)
+        if (isTouchingWall && anim.GetBool("isJumping") && !anim.GetBool("isWallKicking") && !isAirborne && canWallRun)
         {
             anim.SetBool("isWallKicking", true);
         }
@@ -172,7 +182,6 @@ public class PlayerController : MonoBehaviour
                 !isTouchingWall)
             {
                 anim.SetBool("isWallKicking", false);
-                isAirborne = true;
                 Flip();
             }
             else if (isFacingRight && moveInput < 0 || !isFacingRight && moveInput > 0)
@@ -182,7 +191,7 @@ public class PlayerController : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Space))
             {
                 anim.SetBool("isWallKicking", false);
-                SetAirborne(0.1f);
+                SetAirborne(0.1f, true);
 
                 if (isFacingRight)
                 {
@@ -199,23 +208,22 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+
         if (anim.GetBool("isSliding"))
         {
             if (isFacingRight)
             {
-                rb.velocity = new Vector2(1.2f * moveSpeed, -0.1f);
+                rb.velocity = new Vector2(1.2f * moveSpeed, 0);
             }
             else
             {
-                rb.velocity = new Vector2(-1.2f * moveSpeed, -0.1f);
+                rb.velocity = new Vector2(-1.2f * moveSpeed, 0);
             }
         }
-        else if(isAirborne)
+        else if(!isAirborne)
         {
             rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
         }
-
-        
     }
 
     void Flip()
@@ -231,25 +239,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void SetAirborne(float time)
+    void SetAirborne(float time, bool isAbs)
     {
-        isAirborne = false;
+        AirborneTimeCounter = AirborneTimeCounter < time ? time : AirborneTimeCounter;
 
-        if (time > 0)
+        if (isAbs)
         {
-            if (time > AirborneTimeCounter)
-            {
-                AirborneTimeCounter = time;
-            }
+            isAirborne = true;
+        }
+        else if (anim.GetBool("isRunning"))
+        {
+            isAirborne = false;
+            AirborneTimeCounter = 0f;
         }
     }
 
     void SetWallRunStiffness(float time)
     {
-        canWallRun = false;
-
         if (time > 0)
         {
+            canWallRun = false;
+
             if (time > wallRunStiffnessTimeCounter)
             {
                 wallRunStiffnessTimeCounter = time;
