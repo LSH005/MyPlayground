@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private float moveStiffnessTimeCounter = 0;
     private float moveInput;
     private bool canMove = true;
+    private bool isAirborne = false;
     private bool isGrounded = true;
     private bool canWallRun = false;
     private bool isTouchingWall = false;
@@ -44,6 +45,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
         bool eyesTouchingWall = Physics2D.OverlapCircle(wallCheckEyes.position, wallCheckRadius, wallLayer);
         bool feetTouchingWall = Physics2D.OverlapCircle(wallCheckFeet.position, wallCheckRadius, wallLayer);
         isTouchingWall = eyesTouchingWall || feetTouchingWall;
@@ -67,18 +73,16 @@ public class PlayerController : MonoBehaviour
         if (moveStiffnessTimeCounter > 0)
         {
             canMove = false;
-            moveStiffnessTimeCounter-= Time.deltaTime;
+            moveStiffnessTimeCounter -= Time.deltaTime;
             if (moveStiffnessTimeCounter <= 0)
             {
                 canMove = true;
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-
+        moveInput = Input.GetAxisRaw("Horizontal");
+        anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
+        
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
@@ -98,9 +102,6 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("isJumping", true);
         }
 
-
-        moveInput = Input.GetAxisRaw("Horizontal");
-        anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
 
         if (canMove)
         {
@@ -129,6 +130,7 @@ public class PlayerController : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Space))
             {
                 anim.SetBool("isWallKicking", false);
+                isAirborne = true;
                 moveStiffnessTimeCounter = 0.1f;
 
                 if (isFacingRight)
@@ -146,7 +148,15 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (canMove)
+        if (isAirborne)
+        {
+            if (anim.GetBool("isRunning") || isGrounded)
+            {
+                isAirborne = false;
+            }
+        }
+
+        if (canMove && !isAirborne)
         {
             rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
         }
