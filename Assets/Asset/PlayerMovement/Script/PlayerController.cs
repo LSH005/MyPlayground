@@ -141,20 +141,16 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
-            var vel = rb.velocity;
-            vel.y = jumpForce;
-            rb.velocity = vel;
-
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             coyoteTimeCounter = 0f;
             SetWallRunStiffness(0.2f);
-            SetAirborne(0f, false);
-
-            anim.SetBool("isJumping", true);
-
+            
             if (anim.GetBool("isSliding"))
             {
+                SetAirborne(0.05f, true);
                 anim.SetBool("isSliding", false);
             }
+            anim.SetBool("isJumping", true);
         }
 
         if (anim.GetBool("isSliding"))
@@ -222,6 +218,7 @@ public class PlayerController : MonoBehaviour
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
 
         anim.SetBool("isSliding", false);
+
         if (anim.GetBool("isWallKicking"))
         {
             anim.SetBool("isWallKicking", false);
