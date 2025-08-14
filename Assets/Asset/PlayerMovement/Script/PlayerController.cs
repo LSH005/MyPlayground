@@ -1,8 +1,5 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -10,6 +7,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     public float jumpForce = 15f;
     public float coyoteTime = 0.1f; // 코요테 타임 지속 시간
+    public float quickTrunTime = 0.15f;
     [Header("Ground")]
     //public Transform groundCheck;
     public Transform groundCheckLeft;
@@ -24,13 +22,14 @@ public class PlayerController : MonoBehaviour
     public float wallCheckRadius = 0.2f;
 
     private float wallRunStiffnessTimeCounter = 0;
-    private float moveStiffnessTimeCounter = 0;
+    private float AirborneTimeCounter = 0;
     private float moveInput;
-    private bool canMove = true;
-    private bool isAirborne = false;
+    private float afterMoveInput = 0f;
+    private bool isAirborne = true;
     private bool isGrounded = true;
     private bool canWallRun = false;
     private bool isTouchingWall = false;
+    private bool isCrashingWall = false;
     private bool isFacingRight = true;
     private Rigidbody2D rb;
     private Animator anim;
@@ -54,11 +53,31 @@ public class PlayerController : MonoBehaviour
         bool feetTouchingWall = Physics2D.OverlapCircle(wallCheckFeet.position, wallCheckRadius, wallLayer);
         isTouchingWall = eyesTouchingWall || feetTouchingWall;
 
+        bool eyesCrashingWall = Physics2D.OverlapCircle(wallCheckEyes.position, wallCheckRadius, groundLayer);
+        bool feetCrashingWall = Physics2D.OverlapCircle(wallCheckFeet.position, wallCheckRadius, groundLayer);
+        isCrashingWall = eyesCrashingWall || feetCrashingWall;
+
         bool leftFoot = Physics2D.OverlapCircle(groundCheckLeft.position, groundCheckRadius, groundLayer);
         bool centerFoot = Physics2D.OverlapCircle(groundCheckCenter.position, groundCheckRadius, groundLayer);
         bool rightFoot = Physics2D.OverlapCircle(groundCheckRight.position, groundCheckRadius, groundLayer);
         isGrounded = leftFoot || centerFoot || rightFoot;
         //isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        //moveInput = Input.GetAxisRaw("Horizontal");
+        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+        {
+            moveInput = 0;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            moveInput = -1;
+        }
+        else
+        {
+            moveInput = 1;
+        }
+
+        anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
 
         if (wallRunStiffnessTimeCounter > 0)
         {
@@ -70,23 +89,48 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (moveStiffnessTimeCounter > 0)
+        if (AirborneTimeCounter > 0)
         {
-            canMove = false;
-            moveStiffnessTimeCounter -= Time.deltaTime;
-            if (moveStiffnessTimeCounter <= 0)
+            AirborneTimeCounter -= Time.deltaTime;
+            if (isCrashingWall)
             {
-                canMove = true;
+                isAirborne = true;
+                AirborneTimeCounter = 0;
+            }
+            if (AirborneTimeCounter <= 0 && anim.GetBool("isRunning"))
+            {
+                isAirborne = true;
             }
         }
+        else if (!isAirborne && anim.GetBool("isRunning") || !isAirborne && isCrashingWall)
+        {
+            isAirborne = true;
+        }
 
-        moveInput = Input.GetAxisRaw("Horizontal");
-        anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
+        if (isAirborne)
+        {
+            if (moveInput > 0 && !isFacingRight) Flip();
+            else if (moveInput < 0 && isFacingRight) Flip();
+        }
+
+        if (anim.GetBool("isRunning"))
+        {
+            afterMoveInput = 0;
+        }
+        else
+        {
+            afterMoveInput += Time.deltaTime;
+        }
         
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
             anim.SetBool("isJumping", false);
+
+            if (Input.GetKey(KeyCode.LeftShift) && anim.GetBool("isRunning"))
+            {
+                anim.SetBool("isSliding", true);
+            }
         }
         else
         {
@@ -98,40 +142,47 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             coyoteTimeCounter = 0f;
-            wallRunStiffnessTimeCounter = 0.2f;
-            anim.SetBool("isJumping", true);
+            SetWallRunStiffness(0.2f);
+            SetAirborne(0f);
+            anim.SetBool("isSliding", false);
         }
 
-
-        if (canMove)
+        if (anim.GetBool("isSliding"))
         {
-            if (moveInput > 0 && !isFacingRight) Flip();
-            else if (moveInput < 0 && isFacingRight) Flip();
+            if (isCrashingWall)
+            {
+                anim.SetBool("isSliding", false);
+            }
+            
+            if (coyoteTimeCounter <= 0f)
+            {
+                anim.SetBool("isSliding", false);
+            }
         }
 
-
-        if (isTouchingWall && anim.GetBool("isJumping") && !anim.GetBool("isWallKicking") && canMove && canWallRun)
+        if (isTouchingWall && anim.GetBool("isJumping") && !anim.GetBool("isWallKicking") && isAirborne && canWallRun)
         {
             anim.SetBool("isWallKicking", true);
-            canMove = false;
         }
         if (anim.GetBool("isWallKicking"))
         {
             rb.velocity = new Vector2(0f, -1f);
 
             if (isGrounded ||
-                !isTouchingWall ||
-                Input.GetKeyDown(KeyCode.S))
+                !isTouchingWall)
             {
                 anim.SetBool("isWallKicking", false);
-                canMove = true;
+                isAirborne = true;
+                Flip();
+            }
+            else if (isFacingRight && moveInput < 0 || !isFacingRight && moveInput > 0)
+            {
                 Flip();
             }
             else if (Input.GetKeyDown(KeyCode.Space))
             {
                 anim.SetBool("isWallKicking", false);
-                isAirborne = true;
-                moveStiffnessTimeCounter = 0.1f;
+                SetAirborne(0.1f);
 
                 if (isFacingRight)
                 {
@@ -148,24 +199,62 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isAirborne)
+        if (anim.GetBool("isSliding"))
         {
-            if (anim.GetBool("isRunning") || isGrounded)
+            if (isFacingRight)
             {
-                isAirborne = false;
+                rb.velocity = new Vector2(1.2f * moveSpeed, -0.1f);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-1.2f * moveSpeed, -0.1f);
             }
         }
-
-        if (canMove && !isAirborne)
+        else if(isAirborne)
         {
             rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
         }
+
+        
     }
 
     void Flip()
     {
         isFacingRight = !isFacingRight;
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+
+        anim.SetBool("isSliding", false);
+        if (anim.GetBool("isWallKicking"))
+        {
+            anim.SetBool("isWallKicking", false);
+            wallRunStiffnessTimeCounter = 0.1f;
+        }
+    }
+
+    void SetAirborne(float time)
+    {
+        isAirborne = false;
+
+        if (time > 0)
+        {
+            if (time > AirborneTimeCounter)
+            {
+                AirborneTimeCounter = time;
+            }
+        }
+    }
+
+    void SetWallRunStiffness(float time)
+    {
+        canWallRun = false;
+
+        if (time > 0)
+        {
+            if (time > wallRunStiffnessTimeCounter)
+            {
+                wallRunStiffnessTimeCounter = time;
+            }
+        }
     }
 
     void OnDrawGizmosSelected()

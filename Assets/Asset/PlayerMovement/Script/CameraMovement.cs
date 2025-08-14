@@ -16,6 +16,7 @@ public class CameraMovement : MonoBehaviour
     {
         if (followTarget == null)
         {
+            Destroy(this);
             return;
         }
 
