@@ -252,6 +252,10 @@ public class PlayerController : MonoBehaviour
             isAirborne = false;
             AirborneTimeCounter = 0f;
         }
+        else
+        {
+            isAirborne = true;
+        }
     }
 
     void SetWallRunStiffness(float time)
