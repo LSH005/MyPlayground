@@ -159,12 +159,7 @@ public class PlayerController : MonoBehaviour
 
         if (anim.GetBool("isSliding"))
         {
-            if (isCrashingWall)
-            {
-                anim.SetBool("isSliding", false);
-            }
-            
-            if (coyoteTimeCounter <= 0f)
+            if (isCrashingWall || coyoteTimeCounter <= 0f)
             {
                 anim.SetBool("isSliding", false);
             }
@@ -178,14 +173,9 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector2(0f, -1f);
 
-            if (isGrounded ||
-                !isTouchingWall)
+            if (isGrounded || !isTouchingWall || isFacingRight && moveInput < 0 || !isFacingRight && moveInput > 0)
             {
                 anim.SetBool("isWallKicking", false);
-                Flip();
-            }
-            else if (isFacingRight && moveInput < 0 || !isFacingRight && moveInput > 0)
-            {
                 Flip();
             }
             else if (Input.GetKeyDown(KeyCode.Space))
