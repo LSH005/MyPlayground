@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 15f;
-    public float coyoteTime = 0.1f; // 코요테 타임 지속 시간
+    public float coyoteTime = 0.1f;
     public float quickTrunTime = 0.15f;
     [Header("Ground")]
     //public Transform groundCheck;
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
 
-    private float coyoteTimeCounter; // 코요테 타임 카운터
+    private float coyoteTimeCounter;
 
     private void Awake()
     {
@@ -63,7 +63,11 @@ public class PlayerController : MonoBehaviour
         isGrounded = leftFoot || centerFoot || rightFoot;
         //isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
+        /*
         //moveInput = Input.GetAxisRaw("Horizontal");
+        제 1대 방향키 동작 코드 (사망)
+        사망 사유 : 개발자는 화살표 키를 감지하는 것을 원치 않음
+        
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
             moveInput = 0;
@@ -76,6 +80,32 @@ public class PlayerController : MonoBehaviour
         {
             moveInput = 1;
         }
+        제 2대 방향키 동작 코드 (사망)
+        사망 사유 : 마음에 안 들음.
+
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+        {
+            if (Input.GetKey(KeyCode.A))
+            {
+                moveInput = -1;
+            }
+            else
+            {
+                moveInput = 1;
+            }
+        }
+        else
+        {
+            moveInput = 0;
+        }
+        제 3대 방향키 동작 코드 (사망)
+        사망 사유 : 제 4대 방향키 동작 코드가 더 뛰어난 계산 효율을 가짐
+        */
+
+        if (Input.GetKey(KeyCode.A)) moveInput = -1;
+        else if (Input.GetKey(KeyCode.D)) moveInput = 1;
+        else moveInput = 0;
+        // 제 4대 방향키 동작 코드
 
         anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
 
@@ -117,34 +147,39 @@ public class PlayerController : MonoBehaviour
             isAirborne = false;
         }
 
+        if (isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+            anim.SetBool("isJumping", false);
+        }
+        else
+        {
+            if (coyoteTimeCounter > 0)
+            {
+                coyoteTimeCounter -= Time.deltaTime;
+            }
+
+            anim.SetBool("isJumping", true);
+        }
+
+    }
+
+    private void LateUpdate()
+    {
+        // 방향 전환
         if (!isAirborne)
         {
             if (moveInput > 0 && !isFacingRight) Flip();
             else if (moveInput < 0 && isFacingRight) Flip();
         }
-        
-        if (isGrounded)
-        {
-            coyoteTimeCounter = coyoteTime;
-            anim.SetBool("isJumping", false);
 
-            if (Input.GetKey(KeyCode.LeftShift) && anim.GetBool("isRunning"))
-            {
-                anim.SetBool("isSliding", true);
-            }
-        }
-        else
-        {
-            coyoteTimeCounter -= Time.deltaTime;
-            anim.SetBool("isJumping", true);
-        }
-
+        // 점프
         if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             coyoteTimeCounter = 0f;
             SetWallRunStiffness(0.2f);
-            
+
             if (anim.GetBool("isSliding"))
             {
                 SetAirborne(0.05f, true);
@@ -153,14 +188,25 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("isJumping", true);
         }
 
+        // 슬라이딩
         if (anim.GetBool("isSliding"))
         {
             if (isCrashingWall || coyoteTimeCounter <= 0f)
             {
+                // 슬라이딩 해제 조건 :
+                // 벽에 충돌 || 공중에 뜸 || Flip() 호출됨 (방향을 반대로 꺽음)
                 anim.SetBool("isSliding", false);
             }
         }
+        else
+        {
+            if (Input.GetKey(KeyCode.LeftShift) && anim.GetBool("isRunning") && !isCrashingWall && isGrounded)
+            {
+                anim.SetBool("isSliding", true);
+            }
+        }
 
+        // 월 킥 (공중에서 벽에 붙기)
         if (isTouchingWall && anim.GetBool("isJumping") && !anim.GetBool("isWallKicking") && !isAirborne && canWallRun)
         {
             anim.SetBool("isWallKicking", true);
@@ -171,11 +217,14 @@ public class PlayerController : MonoBehaviour
 
             if (isGrounded || !isTouchingWall || isFacingRight && moveInput < 0 || !isFacingRight && moveInput > 0)
             {
+                // 월 킥 해제 조건 :
+                // 땅에 닿음 || 벽에서 떨어짐 || 오른쪽 벽에 붙어 A 누르기 || 왼쪽 벽에 붙어 D 누르기
                 anim.SetBool("isWallKicking", false);
                 Flip();
             }
             else if (Input.GetKeyDown(KeyCode.Space))
             {
+                // 월 킥 발동 조건 : 벽에서 미끄러지는 도중 스페이스 바 누르기
                 anim.SetBool("isWallKicking", false);
                 SetAirborne(0.1f, true);
 
