@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     private float AirborneTimeCounter = 0;
     private float moveInput;
     private float afterMoveInput = 0f;
+    private float inputHoldTime = 0f;
+    private float quickTrunTimeCounter = 0f;
     private bool isAirborne = false;
     private bool isGrounded = true;
     private bool canWallRun = false;
@@ -91,6 +93,24 @@ public class PlayerController : MonoBehaviour
         사망 사유 : 제 4대 방향키 동작 코드가 더 뛰어난 계산 효율을 가짐
         */
 
+        if (anim.GetBool("isQuickTurning"))
+        {
+            quickTrunTimeCounter += Time.deltaTime;
+            if (quickTrunTimeCounter >= quickTrunTime && isGrounded)
+            {
+                anim.SetBool("isQuickTurning", false);
+                inputHoldTime = 0;
+                CheckFlip();
+            }
+            if (!isGrounded)
+            {
+                anim.SetBool("isQuickTurning", false);
+                inputHoldTime = 0;
+            }
+
+            if (anim.GetBool("isQuickTurning")) return;
+        }
+
         if (Input.GetKey(KeyCode.A)) moveInput = -1;
         else if (Input.GetKey(KeyCode.D)) moveInput = 1;
         else moveInput = 0;
@@ -98,13 +118,26 @@ public class PlayerController : MonoBehaviour
 
         anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
 
+        // 퀵턴
         if (anim.GetBool("isRunning"))
         {
+            if (CheckFlipOutput() && afterMoveInput < 0.1f && !anim.GetBool("isQuickTurning") && isGrounded && inputHoldTime > quickTrunTime*2)
+            {
+                anim.SetBool("isQuickTurning", true);
+                quickTrunTimeCounter = 0;
+                return;
+            }
+
             afterMoveInput = 0;
+            inputHoldTime += Time.deltaTime;
         }
         else
         {
             afterMoveInput += Time.deltaTime;
+            if (afterMoveInput > quickTrunTime)
+            {
+                inputHoldTime = 0;
+            }
         }
 
         if (wallRunStiffnessTimeCounter > 0)
@@ -157,6 +190,8 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (anim.GetBool("isQuickTurning")) return;
+
         // 방향 전환
         if (!isAirborne)
         {
@@ -245,6 +280,17 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(-1.2f * moveSpeed, 0);
             }
         }
+        else if (anim.GetBool("isQuickTurning"))
+        {
+            if (isFacingRight)
+            {
+                rb.velocity = new Vector2(0.5f * moveSpeed, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-0.5f * moveSpeed, 0);
+            }
+        }
         else if(!isAirborne && !anim.GetBool("isWallKicking"))
         {
             rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
@@ -304,10 +350,12 @@ public class PlayerController : MonoBehaviour
 
     void CheckFlip()
     {
-        if ((moveInput > 0 && !isFacingRight) || (moveInput < 0 && isFacingRight))
-        {
-            Flip();
-        }
+        if ((moveInput > 0 && !isFacingRight) || (moveInput < 0 && isFacingRight)) Flip();
+    }
+
+    bool CheckFlipOutput()
+    {
+        return (moveInput > 0 && !isFacingRight) || (moveInput < 0 && isFacingRight);
     }
 
     void OnDrawGizmosSelected()
