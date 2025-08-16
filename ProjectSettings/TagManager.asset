@@ -8,6 +8,7 @@ TagManager:
   - Node
   - Tracker
   - Target
+  - UI
   layers:
   - Default
   - TransparentFX
