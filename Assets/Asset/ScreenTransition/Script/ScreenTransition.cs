@@ -51,12 +51,12 @@ public class ScreenTransition : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_1", Color.black, 0f, 0.0f, 0f, 0.0f, 0f);
+            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_4", Color.black, 0f, 0.5f, 8f, 0.5f, 0f);
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            ScreenTransitionGoto("PlayerMovement", "LoadingScreen_3", Color.gray, 0f, 0.5f, 7f, 0.5f, 0f);
+            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_3", Color.gray, 0f, 0.5f, 7f, 0.5f, 0f);
         }
     }
 
