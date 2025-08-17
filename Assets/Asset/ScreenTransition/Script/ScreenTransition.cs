@@ -46,7 +46,7 @@ public class ScreenTransition : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_2", new Color32(255, 214, 117, 255), 0f, 0.5f, 5f, 0.5f, 0f);
+            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_2", new Color32(255, 214, 117, 255), 0f, 0.5f, 7f, 0.5f, 0f);
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -56,7 +56,7 @@ public class ScreenTransition : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            ScreenTransitionGoto("PlayerMovement", "LoadingScreen_3", Color.gray, 0f, 2f, 7f, 2f, 0f);
+            ScreenTransitionGoto("PlayerMovement", "LoadingScreen_3", Color.gray, 0f, 0.5f, 7f, 0.5f, 0f);
         }
     }
 
@@ -65,6 +65,11 @@ public class ScreenTransition : MonoBehaviour
         if (Instance == null)
         {
             Debug.LogError("ScreenTransition 인스턴스가 존재하지 않음");
+            return;
+        }
+
+        if (Instance.isTransitioning)
+        {
             return;
         }
 
@@ -83,18 +88,23 @@ public class ScreenTransition : MonoBehaviour
 
     private void StartTransitionInternal()
     {
+        //if (isTransitioning)
+        //{
+        //    return;
+        //}
+
         if (Curtain == null)
         {
             Debug.LogError("Curtain프리팹 없음");
-            isTransitioning = false;
             return;
         }
+
+        isTransitioning = true;
         StartCoroutine(StartTransition());
     }
 
     private IEnumerator StartTransition()
     {
-        isTransitioning = true;
         SetUI();
         SetUIObjectsActive(false);
 
