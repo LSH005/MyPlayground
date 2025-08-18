@@ -39,24 +39,24 @@ public class ScreenTransition : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_1", Color.black, 1f, 0.5f, 5f, 0.5f, 1f);
+            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_1", Color.black, 0f, 0f, 7f, 0f, 0f);
         }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             ScreenTransitionGoto("ScreenTransition", "LoadingScreen_2", new Color32(255, 214, 117, 255), 0f, 0.5f, 7f, 0.5f, 0f);
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_4", Color.black, 0f, 0.5f, 8f, 0.5f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             ScreenTransitionGoto("ScreenTransition", "LoadingScreen_3", Color.gray, 0f, 0.5f, 7f, 0.5f, 0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_4", Color.black, 0f, 0.5f, 7f, 0.5f, 0f);
         }
     }
 

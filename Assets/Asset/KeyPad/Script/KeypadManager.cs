@@ -9,7 +9,7 @@ public class KeypadManager : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Sprite doorSprite;
 
-    private int[] passcode = new int[5];
+    private int[] passcode = new int[4];
     private int passcodeIndex = 0;
     private bool isDoorOpened = false;
     private string password = "";
