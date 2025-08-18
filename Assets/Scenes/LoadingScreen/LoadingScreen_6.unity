@@ -570,7 +570,7 @@ GameObject:
   m_Component:
   - component: {fileID: 967703125}
   m_Layer: 0
-  m_Name: Right Leg Loot
+  m_Name: Right Arm Loot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -758,7 +758,7 @@ Animator:
   m_GameObject: {fileID: 1062083711}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 00ba1a3ec9d7f1246ae52d3b17dd5257, type: 2}
+  m_Controller: {fileID: 9100000, guid: ec1c104fd15bc804b972873f96771760, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
