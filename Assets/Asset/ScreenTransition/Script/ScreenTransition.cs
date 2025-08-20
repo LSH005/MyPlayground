@@ -68,6 +68,11 @@ public class ScreenTransition : MonoBehaviour
         {
             ScreenTransitionGoto("ScreenTransition", "LoadingScreen_6", Color.black, 0f, 0.5f, 9f, 0.5f, 0f);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_7", Color.black, 0f, 0.5f, 7f, 0.5f, 0f);
+        }
     }
 
     static public void ScreenTransitionGoto(string SceneName, string LoadingSceneName, Color CurtainColor, float WaitTime1, float FadeOutTime, float LoadingTime, float FadeInTime, float WaitTime2)
