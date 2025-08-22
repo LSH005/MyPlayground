@@ -1,16 +1,41 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CallButton : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public int floorNumber;
+
+    private Color originalColor;
+
+    private Button button;
+    private Image buttonImage;
+
+    private void Awake()
     {
-        
+        button = GetComponent<Button>();
+        buttonImage = GetComponent<Image>();
+        originalColor = buttonImage.color;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-        
+        button.onClick.AddListener(ButtonClicked);
+    }
+
+    public void ButtonClicked()
+    {
+        SetColor(Color.green);
+    }
+
+    public void SetColor(Color colorToChange)
+    {
+        buttonImage.color = colorToChange;
+    }
+    public void ResetColor()
+    {
+        if (buttonImage != null)
+        {
+            buttonImage.color = originalColor;
+        }
     }
 }
