@@ -64,7 +64,10 @@ public class DoorMovement : MonoBehaviour
             yield return null;
         }
 
+        yield return new WaitForSeconds(0.7541f);
+
         ElevatorManager.isDoorMoving = false;
+        ElevatorManager.isDoorControlDisabled = false;
         movementCoroutine = null;
     }
 }

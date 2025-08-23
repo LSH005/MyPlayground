@@ -22,9 +22,15 @@ public class ElevatorMovement : MonoBehaviour
         }
 
         ElevatorManager.isElevatorMoving = true;
+        ElevatorManager.isDoorControlDisabled = true;
         ElevatorManager.currentElevatorFloor = targetFloor;
         Vector3 targetPos = Vector3.zero;
         targetPos.y = floorSpacing * (targetFloor - 1);
+        if (movementCoroutine != null)
+        {
+            StopCoroutine(movementCoroutine);
+            movementCoroutine = null;
+        }
         movementCoroutine = StartCoroutine(MoveElevatorTo(targetPos));
     }
 
@@ -36,7 +42,7 @@ public class ElevatorMovement : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7541f);
 
         AfterMove();
     }

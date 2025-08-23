@@ -8,6 +8,7 @@ public class ElevatorManager : MonoBehaviour
     public static bool isDoorMoving = false;
     public static bool isElevatorMoving = false;
     public static bool isDoorOpened = false;
+    public static bool isDoorControlDisabled = false;
 
     private float autoCloseCount = 0;
     private DoorMovement[] allDoors;
@@ -86,7 +87,6 @@ public class ElevatorManager : MonoBehaviour
             if (button.floorNumber == floorNumber)
             {
                 button.ResetButton();
-                break;
             }
         }
     }
