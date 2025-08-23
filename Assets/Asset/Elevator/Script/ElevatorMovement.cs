@@ -44,6 +44,7 @@ public class ElevatorMovement : MonoBehaviour
     private void AfterMove()
     {
         manager.OpenAllDoors();
+        ElevatorManager.isDoorOpened = true;
         ElevatorManager.isElevatorMoving = false;
         movementCoroutine = null;
     }

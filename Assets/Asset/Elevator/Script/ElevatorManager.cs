@@ -9,6 +9,7 @@ public class ElevatorManager : MonoBehaviour
     public static bool isElevatorMoving = false;
     public static bool isDoorOpened = false;
 
+    private float autoCloseCount = 0;
     private DoorMovement[] allDoors;
     private CallButton[] allCallButtons;
     private ElevatorMovement ElevatorMovement;
@@ -33,11 +34,22 @@ public class ElevatorManager : MonoBehaviour
             CloseAllDoors();
         }
 
+        if (autoCloseCount >= 0)
+        {
+            autoCloseCount -= Time.deltaTime;
+            if (autoCloseCount < 0)
+            {
+                CloseAllDoors();
+            }
+        }
     }
 
     public void OpenAllDoors()
     {
+        isDoorOpened = true;
+
         ButtonOff(currentElevatorFloor);
+        autoCloseCount = 3.0f;
 
         if (allDoors == null || allDoors.Length == 0)
         {
@@ -53,6 +65,8 @@ public class ElevatorManager : MonoBehaviour
 
     public void CloseAllDoors()
     {
+        isDoorOpened = false;
+
         if (allDoors == null || allDoors.Length == 0)
         {
             Debug.LogWarning("문이 존재하지 않거나, DoorMovement 스크립트가 없음");

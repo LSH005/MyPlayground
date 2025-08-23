@@ -15,8 +15,6 @@ public class DoorMovement : MonoBehaviour
 
     public void DoorOpen(float time)
     {
-        ElevatorManager.isDoorOpened = true;
-
         if (time <= 0f)
         {
             StopMovement();
@@ -30,8 +28,6 @@ public class DoorMovement : MonoBehaviour
 
     public void DoorClose(float time)
     {
-        ElevatorManager.isDoorOpened = false;
-
         if (time <= 0f)
         {
             StopMovement();
