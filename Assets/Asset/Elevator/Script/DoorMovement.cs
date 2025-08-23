@@ -15,9 +15,11 @@ public class DoorMovement : MonoBehaviour
 
     public void DoorOpen(float time)
     {
+        ElevatorManager.isDoorOpened = true;
+
         if (time <= 0f)
         {
-            StopExistingCoroutine();
+            StopMovement();
             transform.localPosition = openPosition;
             return;
         }
@@ -28,9 +30,11 @@ public class DoorMovement : MonoBehaviour
 
     public void DoorClose(float time)
     {
+        ElevatorManager.isDoorOpened = false;
+
         if (time <= 0f)
         {
-            StopExistingCoroutine();
+            StopMovement();
             transform.localPosition = initialPosition;
             return;
         }
@@ -41,19 +45,22 @@ public class DoorMovement : MonoBehaviour
 
     private void StartMovement(Vector3 target, float speed)
     {
-        StopExistingCoroutine();
-        movementCoroutine = StartCoroutine(MoveWithConstantSpeedCoroutine(target, speed));
+        StopMovement();
+        ElevatorManager.isDoorMoving = true;
+        movementCoroutine = StartCoroutine(MoveDoorTo(target, speed));
     }
 
-    private void StopExistingCoroutine()
+    private void StopMovement()
     {
         if (movementCoroutine != null)
         {
             StopCoroutine(movementCoroutine);
+            ElevatorManager.isDoorMoving = false;
+            movementCoroutine = null;
         }
     }
 
-    private IEnumerator MoveWithConstantSpeedCoroutine(Vector3 target, float speed)
+    private IEnumerator MoveDoorTo(Vector3 target, float speed)
     {
         while (transform.localPosition != target)
         {
@@ -61,6 +68,7 @@ public class DoorMovement : MonoBehaviour
             yield return null;
         }
 
+        ElevatorManager.isDoorMoving = false;
         movementCoroutine = null;
     }
 }

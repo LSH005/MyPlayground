@@ -1,15 +1,24 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ElevatorManager : MonoBehaviour
 {
     public float doorMoveTime = 2.0f;
 
-    private List<DoorMovement> allDoors;
+    public static int currentElevatorFloor;
+    public static bool isDoorMoving = false;
+    public static bool isElevatorMoving = false;
+    public static bool isDoorOpened = false;
+
+    private DoorMovement[] allDoors;
+    private CallButton[] allCallButtons;
+    private ElevatorMovement ElevatorMovement;
 
     private void Awake()
     {
-        allDoors = new List<DoorMovement>(FindObjectsOfType<DoorMovement>());
+        allDoors = FindObjectsOfType<DoorMovement>();
+        allCallButtons = FindObjectsOfType<CallButton>();
+        ElevatorMovement = FindObjectOfType<ElevatorMovement>();
+        currentElevatorFloor = 1;
     }
 
     private void Update()
@@ -23,11 +32,14 @@ public class ElevatorManager : MonoBehaviour
         {
             CloseAllDoors();
         }
+
     }
 
     public void OpenAllDoors()
     {
-        if (allDoors == null || allDoors.Count == 0)
+        ButtonOff(currentElevatorFloor);
+
+        if (allDoors == null || allDoors.Length == 0)
         {
             Debug.LogWarning("문이 존재하지 않거나, DoorMovement 스크립트가 없음");
             return;
@@ -41,7 +53,7 @@ public class ElevatorManager : MonoBehaviour
 
     public void CloseAllDoors()
     {
-        if (allDoors == null || allDoors.Count == 0)
+        if (allDoors == null || allDoors.Length == 0)
         {
             Debug.LogWarning("문이 존재하지 않거나, DoorMovement 스크립트가 없음");
             return;
@@ -50,6 +62,18 @@ public class ElevatorManager : MonoBehaviour
         foreach (DoorMovement door in allDoors)
         {
             door.DoorClose(doorMoveTime);
+        }
+    }
+
+    public void ButtonOff(int floorNumber)
+    {
+        foreach (CallButton button in allCallButtons)
+        {
+            if (button.floorNumber == floorNumber)
+            {
+                button.ResetButton();
+                break;
+            }
         }
     }
 }
