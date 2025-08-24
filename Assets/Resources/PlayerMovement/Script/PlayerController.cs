@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -200,6 +199,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
+            isInAir = false;
             anim.SetBool("isInAir", false);
         }
         else
@@ -283,7 +283,6 @@ public class PlayerController : MonoBehaviour
         {
             if (isTouchingWall && isInAir && !isWallKicking && !isAirborne && canWallRun)
             {
-
                 isWallKicking = true;
                 anim.SetBool("isWallKicking", true);
             }
