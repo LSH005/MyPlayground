@@ -242,6 +242,7 @@ public class PlayerController : MonoBehaviour
         if (anim.GetBool("isWallKicking"))
         {
             rb.velocity = new Vector2(0f, -1f);
+            inputHoldTime = 0f;
 
             if (isGrounded || !isTouchingWall || (isFacingRight && moveInput < 0) || (!isFacingRight && moveInput > 0))
             {
