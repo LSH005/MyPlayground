@@ -174,7 +174,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
-            anim.SetBool("isJumping", false);
+            anim.SetBool("isInAir", false);
         }
         else
         {
@@ -183,7 +183,10 @@ public class PlayerController : MonoBehaviour
                 coyoteTimeCounter -= Time.deltaTime;
             }
 
-            anim.SetBool("isJumping", true);
+            anim.SetBool("isInAir", true);
+
+            if (rb.velocity.y > 0) anim.SetBool("isGoingUp", true);
+            else anim.SetBool("isGoingUp", false);
         }
 
     }
@@ -210,7 +213,7 @@ public class PlayerController : MonoBehaviour
                 SetAirborne(0.05f);
                 anim.SetBool("isSliding", false);
             }
-            anim.SetBool("isJumping", true);
+            anim.SetBool("isInAir", true);
         }
 
         // 슬라이딩
@@ -232,7 +235,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // 월 킥 (공중에서 벽에 붙기)
-        if (isTouchingWall && anim.GetBool("isJumping") && !anim.GetBool("isWallKicking") && !isAirborne && canWallRun)
+        if (isTouchingWall && anim.GetBool("isInAir") && !anim.GetBool("isWallKicking") && !isAirborne && canWallRun)
         {
             anim.SetBool("isWallKicking", true);
         }
