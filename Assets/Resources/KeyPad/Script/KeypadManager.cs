@@ -4,18 +4,21 @@ using UnityEngine.SceneManagement;
 
 public class KeypadManager : MonoBehaviour
 {
+    public int maxPasswordLength = 4;
+
     public TMP_Text PasswordText;
 
     public SpriteRenderer spriteRenderer;
     public Sprite doorSprite;
 
-    private int[] passcode = new int[4];
+    private int[] passcode;
     private int passcodeIndex = 0;
     private bool isDoorOpened = false;
     private string password = "";
 
     private void Start()
     {
+        passcode = new int[maxPasswordLength];
         GeneratePasscode();
         PasswordText.text = "####";
     }
