@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -8,6 +9,13 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 15f;
     public float coyoteTime = 0.1f;
     public float quickTrunTime = 0.15f;
+    [Header("Debuff")]
+    public bool enableReversal = false;
+    public bool disableMove = false;
+    public bool disableWallKick = false;
+    public bool disableSlide = false;
+    public bool disableJump = false;
+    public float moveSpeedMultiplier = 1f;
     [Header("Ground")]
     //public Transform groundCheck;
     public Transform groundCheckLeft;
@@ -27,6 +35,7 @@ public class PlayerController : MonoBehaviour
     private float afterMoveInput = 0f;
     private float inputHoldTime = 0f;
     private float quickTrunTimeCounter = 0f;
+    private float coyoteTimeCounter;
     private bool isAirborne = false;
     private bool isGrounded = true;
     private bool canWallRun = false;
@@ -36,7 +45,13 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
 
-    private float coyoteTimeCounter;
+    // 애니메이션 관련
+    private bool isRunning = false;
+    private bool isQuickTurning = false;
+    private bool isSliding = false;
+    private bool isInAir = false;
+    private bool isWallKicking = false;
+
 
     private void Awake()
     {
@@ -93,36 +108,47 @@ public class PlayerController : MonoBehaviour
         사망 사유 : 제 4대 방향키 동작 코드가 더 뛰어난 계산 효율을 가짐
         */
 
-        if (anim.GetBool("isQuickTurning"))
+        if (isQuickTurning)
         {
             quickTrunTimeCounter += Time.deltaTime;
             if (quickTrunTimeCounter >= quickTrunTime && isGrounded)
             {
+                isQuickTurning = false;
                 anim.SetBool("isQuickTurning", false);
                 inputHoldTime = 0;
                 CheckFlip();
             }
             if (!isGrounded)
             {
+                isQuickTurning = false;
                 anim.SetBool("isQuickTurning", false);
                 inputHoldTime = 0;
             }
 
-            if (anim.GetBool("isQuickTurning")) return;
+            if (isQuickTurning) return;
         }
 
-        if (Input.GetKey(KeyCode.A)) moveInput = -1;
-        else if (Input.GetKey(KeyCode.D)) moveInput = 1;
+        if (!disableMove)
+        {
+            if (Input.GetKey(KeyCode.A)) moveInput = -moveSpeedMultiplier;
+            else if (Input.GetKey(KeyCode.D)) moveInput = moveSpeedMultiplier;
+            else moveInput = 0;
+
+            if (enableReversal) moveInput = -moveInput;
+        }
         else moveInput = 0;
+
         // 제 4대 방향키 동작 코드
 
-        anim.SetBool("isRunning", Mathf.Abs(moveInput) > 0.1f);
+        isRunning = Mathf.Abs(moveInput) > 0.1f;
+        if (isRunning != anim.GetBool("isRunning")) anim.SetBool("isRunning", isRunning);
 
         // 퀵턴
-        if (anim.GetBool("isRunning"))
+        if (isRunning)
         {
-            if (CheckFlipOutput() && afterMoveInput < 0.1f && !anim.GetBool("isQuickTurning") && isGrounded && inputHoldTime > quickTrunTime*2)
+            if (CheckFlipOutput() && afterMoveInput < 0.1f && !isQuickTurning && isGrounded && inputHoldTime > quickTrunTime*2)
             {
+                isQuickTurning = true;
                 anim.SetBool("isQuickTurning", true);
                 quickTrunTimeCounter = 0;
                 return;
@@ -160,12 +186,12 @@ public class PlayerController : MonoBehaviour
                 AirborneTimeCounter = 0;
                 CheckFlip();
             }
-            if (AirborneTimeCounter <= 0 && anim.GetBool("isRunning"))
+            if (AirborneTimeCounter <= 0 && isRunning)
             {
                 isAirborne = false;
             }
         }
-        else if ((isAirborne && (anim.GetBool("isRunning")) || isCrashingWall || isGrounded))
+        else if ((isAirborne && (isRunning) || isCrashingWall || isGrounded))
         {
             isAirborne = false;
             CheckFlip();
@@ -183,6 +209,7 @@ public class PlayerController : MonoBehaviour
                 coyoteTimeCounter -= Time.deltaTime;
             }
 
+            isInAir = true;
             anim.SetBool("isInAir", true);
 
             if (rb.velocity.y > 0) anim.SetBool("isGoingUp", true);
@@ -193,7 +220,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (anim.GetBool("isQuickTurning")) return;
+        if (isQuickTurning) return;
 
         // 방향 전환
         if (!isAirborne)
@@ -202,100 +229,130 @@ public class PlayerController : MonoBehaviour
         }
 
         // 점프
-        if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
+        if (!disableJump)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            coyoteTimeCounter = 0f;
-            SetWallRunStiffness(0.2f);
-
-            if (anim.GetBool("isSliding"))
+            if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
             {
-                SetAirborne(0.05f);
-                anim.SetBool("isSliding", false);
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                coyoteTimeCounter = 0f;
+                SetWallRunStiffness(0.2f);
+
+                if (isSliding)
+                {
+                    SetAirborne(0.05f);
+                    isSliding = false;
+                    anim.SetBool("isSliding", false);
+                }
+
+                isInAir = true;
+                anim.SetBool("isInAir", true);
             }
-            anim.SetBool("isInAir", true);
         }
 
         // 슬라이딩
-        if (anim.GetBool("isSliding"))
+        if (!disableSlide)
         {
-            if (isCrashingWall || coyoteTimeCounter <= 0f)
+            if (isSliding)
             {
-                // 슬라이딩 해제 조건 :
-                // 벽에 충돌 || 공중에 뜸 || Flip() 호출됨 (방향을 반대로 꺽음)
-                anim.SetBool("isSliding", false);
+                if (isCrashingWall || coyoteTimeCounter <= 0f)
+                {
+                    // 슬라이딩 해제 조건 :
+                    // 벽에 충돌 || 공중에 뜸 || Flip() 호출됨 (방향을 반대로 꺽음)
+                    isSliding = false;
+                    anim.SetBool("isSliding", false);
+                }
+            }
+            else
+            {
+                if (Input.GetKey(KeyCode.LeftShift) && isRunning && !isCrashingWall && isGrounded)
+                {
+                    isSliding = true;
+                    anim.SetBool("isSliding", true);
+                }
             }
         }
-        else
+        else if (isSliding)
         {
-            if (Input.GetKey(KeyCode.LeftShift) && anim.GetBool("isRunning") && !isCrashingWall && isGrounded)
-            {
-                anim.SetBool("isSliding", true);
-            }
+            isSliding = false;
+            anim.SetBool("isSliding", false);
         }
+        
 
         // 월 킥 (공중에서 벽에 붙기)
-        if (isTouchingWall && anim.GetBool("isInAir") && !anim.GetBool("isWallKicking") && !isAirborne && canWallRun)
+        if (!disableWallKick)
         {
-            anim.SetBool("isWallKicking", true);
+            if (isTouchingWall && isInAir && !isWallKicking && !isAirborne && canWallRun)
+            {
+
+                isWallKicking = true;
+                anim.SetBool("isWallKicking", true);
+            }
+
+            if (isWallKicking)
+            {
+                rb.velocity = new Vector2(0f, -1f);
+                inputHoldTime = 0f;
+
+                if (isGrounded || !isTouchingWall || (isFacingRight && moveInput < 0) || (!isFacingRight && moveInput > 0))
+                {
+                    // 월 킥 해제 조건 :
+                    // 땅에 닿음 || 벽에서 떨어짐 || 오른쪽 벽에 붙어 A 누르기 || 왼쪽 벽에 붙어 D 누르기
+                    isWallKicking = false;
+                    anim.SetBool("isWallKicking", false);
+                    Flip();
+                }
+                else if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    // 월 킥 발동 조건 : 벽에서 미끄러지는 도중 스페이스 바 누르기
+                    isWallKicking = false;
+                    anim.SetBool("isWallKicking", false);
+                    SetAirborne(0.1f);
+
+                    if (isFacingRight)
+                    {
+                        rb.velocity = new Vector2(jumpForce * -moveSpeedMultiplier, jumpForce);
+                    }
+                    else
+                    {
+                        rb.velocity = new Vector2(jumpForce * moveSpeedMultiplier, jumpForce);
+                    }
+                    Flip();
+                }
+            }
         }
-        if (anim.GetBool("isWallKicking"))
+        else if (isWallKicking)
         {
-            rb.velocity = new Vector2(0f, -1f);
-            inputHoldTime = 0f;
-
-            if (isGrounded || !isTouchingWall || (isFacingRight && moveInput < 0) || (!isFacingRight && moveInput > 0))
-            {
-                // 월 킥 해제 조건 :
-                // 땅에 닿음 || 벽에서 떨어짐 || 오른쪽 벽에 붙어 A 누르기 || 왼쪽 벽에 붙어 D 누르기
-                anim.SetBool("isWallKicking", false);
-                Flip();
-            }
-            else if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // 월 킥 발동 조건 : 벽에서 미끄러지는 도중 스페이스 바 누르기
-                anim.SetBool("isWallKicking", false);
-                SetAirborne(0.1f);
-
-                if (isFacingRight)
-                {
-                    rb.velocity = new Vector2(jumpForce * -1, jumpForce);
-                }
-                else
-                {
-                    rb.velocity = new Vector2(jumpForce, jumpForce);
-                }
-                Flip();
-            }
+            isWallKicking = false;
+            anim.SetBool("isWallKicking", false);
         }
     }
 
     void FixedUpdate()
     {
 
-        if (anim.GetBool("isSliding"))
+        if (isSliding)
         {
             if (isFacingRight)
             {
-                rb.velocity = new Vector2(1.2f * moveSpeed, 0);
+                rb.velocity = new Vector2((moveSpeedMultiplier * 1.2f) * moveSpeed, 0);
             }
             else
             {
-                rb.velocity = new Vector2(-1.2f * moveSpeed, 0);
+                rb.velocity = new Vector2((moveSpeedMultiplier * -1.2f) * moveSpeed, 0);
             }
         }
-        else if (anim.GetBool("isQuickTurning"))
+        else if (isQuickTurning)
         {
             if (isFacingRight)
             {
-                rb.velocity = new Vector2(0.5f * moveSpeed, 0);
+                rb.velocity = new Vector2((moveSpeedMultiplier / 2) * moveSpeed, 0);
             }
             else
             {
-                rb.velocity = new Vector2(-0.5f * moveSpeed, 0);
+                rb.velocity = new Vector2((moveSpeedMultiplier / -2) * moveSpeed, 0);
             }
         }
-        else if(!isAirborne && !anim.GetBool("isWallKicking"))
+        else if(!isAirborne && !isWallKicking)
         {
             rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
         }
@@ -306,10 +363,12 @@ public class PlayerController : MonoBehaviour
         isFacingRight = !isFacingRight;
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
 
+        isSliding = false;
         anim.SetBool("isSliding", false);
 
-        if (anim.GetBool("isWallKicking"))
+        if (isWallKicking)
         {
+            isWallKicking = false;
             anim.SetBool("isWallKicking", false);
             wallRunStiffnessTimeCounter = 0.1f;
         }
