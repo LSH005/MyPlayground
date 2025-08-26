@@ -6,7 +6,7 @@ public class CameraMovement : MonoBehaviour
 {
     public static CameraMovement Instance;
     public static float Threshold = 0.05f;
-    public static float cameraTrackingSpeed = 7f;
+    public static float cameraTrackingSpeed = 8f;
 
     private Vector3 mainPosition;
     private Vector3 positionOffset;
@@ -16,7 +16,8 @@ public class CameraMovement : MonoBehaviour
     private float currentZ;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
-    private Coroutine PanCoroutine;
+    private Coroutine panCoroutine;
+    private Coroutine zoomCoroutine;
 
     private void Awake()
     {
@@ -52,13 +53,13 @@ public class CameraMovement : MonoBehaviour
 
     private void CameraPanTo_(Vector2 targetPosition, float duration)
     {
-        if (PanCoroutine != null)
+        if (panCoroutine != null)
         {
-            StopCoroutine(PanCoroutine);
+            StopCoroutine(panCoroutine);
         }
 
         canStopMovement = true;
-        PanCoroutine = StartCoroutine(CameraPanCoroutine(targetPosition, duration));
+        panCoroutine = StartCoroutine(CameraPanCoroutine(targetPosition, duration));
     }
 
     public static void CameraFollow(Transform targetPosition)
@@ -68,14 +69,14 @@ public class CameraMovement : MonoBehaviour
 
     private void CameraFollow_(Transform targetPosition)
     {
-        if (PanCoroutine != null)
+        if (panCoroutine != null)
         {
-            StopCoroutine(PanCoroutine);
+            StopCoroutine(panCoroutine);
         }
 
         canStopMovement = false;
         trackingTarget = targetPosition;
-        PanCoroutine = StartCoroutine(CameraPanCoroutine(mainPosition, 0f));
+        panCoroutine = StartCoroutine(CameraPanCoroutine(mainPosition, 0f));
     }
 
     private IEnumerator CameraPanCoroutine(Vector2 targetPosition, float duration)
@@ -93,8 +94,7 @@ public class CameraMovement : MonoBehaviour
 
                 while (elapsedTime < duration)
                 {
-                    float t = elapsedTime / duration;
-                    Vector2 LerpPosition = Vector2.Lerp(startPosition, targetPosition, t);
+                    Vector2 LerpPosition = Vector2.Lerp(startPosition, targetPosition, elapsedTime / duration);
                     mainPosition = new Vector3(LerpPosition.x, LerpPosition.y, currentZ);
                     elapsedTime += Time.deltaTime;
                     yield return null;
@@ -114,5 +114,34 @@ public class CameraMovement : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    public static void CameraZoomTo(float targetZ, float duration)
+    {
+        Instance.CameraZoomTo_(-targetZ, duration);
+    }
+
+    private void CameraZoomTo_(float targetZ, float duration)
+    {
+        if (zoomCoroutine != null)
+        {
+            StopCoroutine(zoomCoroutine);
+        }
+
+        zoomCoroutine = StartCoroutine(CameraZoomCoroutine(targetZ, duration));
+    }
+
+    private IEnumerator CameraZoomCoroutine(float targetZ, float duration)
+    {
+        float startZ = currentZ;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            mainPosition.z = currentZ = Mathf.Lerp(startZ, targetZ, elapsedTime/duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        mainPosition.z = currentZ = targetZ;
     }
 }

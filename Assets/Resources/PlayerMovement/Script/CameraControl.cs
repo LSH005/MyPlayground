@@ -12,17 +12,27 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            CameraMovement.CameraPanTo(target.position, 2f);
+            CameraMovement.CameraPanTo(target.position, 0f);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            CameraMovement.CameraPanTo(target.position, 0f);
+            CameraMovement.CameraFollow(target);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            CameraMovement.CameraFollow(target);
+            CameraMovement.CameraZoomTo(5f, 2f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            CameraMovement.CameraZoomTo(10f, 1f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            CameraMovement.CameraZoomTo(20f, 0.2f);
         }
     }
 }
