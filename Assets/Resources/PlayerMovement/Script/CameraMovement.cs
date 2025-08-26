@@ -12,7 +12,7 @@ public class CameraMovement : MonoBehaviour
     private Vector3 positionOffset;
     private Vector3 mainRotation;
     private Vector3 rotationOffset;
-    private Transform trackingTarget;
+    private Transform positionTrackingTarget;
     private float currentZ;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
@@ -29,10 +29,7 @@ public class CameraMovement : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
 
-    private void Start()
-    {
         mainPosition = transform.position;
         positionOffset = Vector3.zero;
         currentZ = transform.position.z;
@@ -75,7 +72,7 @@ public class CameraMovement : MonoBehaviour
         }
 
         canStopMovement = false;
-        trackingTarget = targetPosition;
+        positionTrackingTarget = targetPosition;
         panCoroutine = StartCoroutine(CameraPanCoroutine(mainPosition, 0f));
     }
 
@@ -83,11 +80,7 @@ public class CameraMovement : MonoBehaviour
     {
         if (canStopMovement)
         {
-            if (duration <= 0)
-            {
-                mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
-            }
-            else
+            if (duration > 0)
             {
                 Vector2 startPosition = mainPosition;
                 float elapsedTime = 0f;
@@ -99,14 +92,16 @@ public class CameraMovement : MonoBehaviour
                     elapsedTime += Time.deltaTime;
                     yield return null;
                 }
-                mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
             }
+
+            mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
+            panCoroutine = null;
         }
         else
         {
             while (true)
             {
-                targetPosition = trackingTarget.transform.position;
+                targetPosition = positionTrackingTarget.transform.position;
                 if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
                 {
                     mainPosition = Vector3.Lerp(mainPosition, new Vector3(targetPosition.x, targetPosition.y, currentZ), cameraTrackingSpeed * Time.deltaTime);
@@ -133,15 +128,19 @@ public class CameraMovement : MonoBehaviour
 
     private IEnumerator CameraZoomCoroutine(float targetZ, float duration)
     {
-        float startZ = currentZ;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
+        if (duration > 0)
         {
-            mainPosition.z = currentZ = Mathf.Lerp(startZ, targetZ, elapsedTime/duration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            float startZ = currentZ;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                mainPosition.z = currentZ = Mathf.Lerp(startZ, targetZ, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
         }
         mainPosition.z = currentZ = targetZ;
+        zoomCoroutine = null;
     }
 }
