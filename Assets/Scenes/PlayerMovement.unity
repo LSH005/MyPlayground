@@ -906,6 +906,51 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &628573228
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 628573230}
+  - component: {fileID: 628573229}
+  m_Layer: 0
+  m_Name: CameraControl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &628573229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628573228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993144bc3ef7f7d47843945fc4b85d65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1354029064}
+--- !u!4 &628573230
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628573228}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.385855, y: 4.4776845, z: -10.224502}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &731291768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2205,6 +2250,12 @@ MonoBehaviour:
   jumpForce: 22
   coyoteTime: 0.1
   quickTrunTime: 0.15
+  enableReversal: 0
+  disableMove: 0
+  disableWallKick: 0
+  disableSlide: 0
+  disableJump: 0
+  moveSpeedMultiplier: 1
   groundCheckLeft: {fileID: 1506074204}
   groundCheckCenter: {fileID: 220970475}
   groundCheckRight: {fileID: 1201674865}
@@ -2483,7 +2534,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.45, y: 0.5}
+    pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.64, y: 0.64}
     newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
@@ -2581,6 +2632,12 @@ MonoBehaviour:
   jumpForce: 22
   coyoteTime: 0.1
   quickTrunTime: 0.15
+  enableReversal: 0
+  disableMove: 0
+  disableWallKick: 0
+  disableSlide: 0
+  disableJump: 0
+  moveSpeedMultiplier: 1
   groundCheckLeft: {fileID: 1496813529}
   groundCheckCenter: {fileID: 1606426456}
   groundCheckRight: {fileID: 37479257}
@@ -2650,7 +2707,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.45, y: 0.5}
+    pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.64, y: 0.64}
     newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
@@ -3838,7 +3895,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.14382343, g: 0.1773671, b: 0.3018868, a: 0}
+  m_BackGroundColor: {r: 0.034009274, g: 0.33962262, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3862,7 +3919,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 6.5
   m_Depth: -1
   m_CullingMask:
@@ -3906,8 +3963,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ebd85882e203ac48b02d6ccdca7b936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followTarget: {fileID: 1354029064}
-  followSpeed: 5
 --- !u!1 &1958600642
 GameObject:
   m_ObjectHideFlags: 0
@@ -4303,6 +4358,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1838424398}
+  - {fileID: 628573230}
   - {fileID: 1483517323}
   - {fileID: 184668866}
   - {fileID: 1381397202}
