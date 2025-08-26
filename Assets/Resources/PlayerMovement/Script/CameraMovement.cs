@@ -6,13 +6,16 @@ public class CameraMovement : MonoBehaviour
 {
     public static CameraMovement Instance;
     public static float Threshold = 0.05f;
-    public static float cameraTrackingSpeed = 8f;
+    public static float cameraTrackingSpeed = 10f;
+    public static float toleranceY = 3.5f;
+    public static float yTrackingDampening = 3f;
 
     private Vector3 mainPosition;
-    private Vector3 positionOffset;
+    private Vector3 positionOffset = Vector3.zero;
     private Vector3 mainRotation;
     private Vector3 rotationOffset;
     private Transform positionTrackingTarget;
+    private Vector2 positionTrackingOffset = Vector2.zero;
     private float currentZ;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
@@ -31,16 +34,13 @@ public class CameraMovement : MonoBehaviour
         }
 
         mainPosition = transform.position;
-        positionOffset = Vector3.zero;
         currentZ = transform.position.z;
     }
 
     private void Update()
     {
-        if (Vector3.Distance(transform.position, mainPosition + positionOffset) > Threshold)
-        {
-            transform.position = mainPosition + positionOffset;
-        }
+        transform.position = mainPosition + positionOffset;
+        transform.rotation = Quaternion.Euler(mainRotation + rotationOffset);
     }
 
     public static void CameraPanTo(Vector2 targetPosition, float duration)
@@ -104,7 +104,14 @@ public class CameraMovement : MonoBehaviour
                 targetPosition = positionTrackingTarget.transform.position;
                 if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
                 {
-                    mainPosition = Vector3.Lerp(mainPosition, new Vector3(targetPosition.x, targetPosition.y, currentZ), cameraTrackingSpeed * Time.deltaTime);
+                    float posZ = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
+                    float posY = Mathf.Clamp(Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime), targetPosition.y - toleranceY, targetPosition.y + toleranceY);
+
+                    mainPosition = new Vector3(
+                        posZ,
+                        posY,
+                        currentZ
+                    );
                 }
                 yield return null;
             }
@@ -143,4 +150,6 @@ public class CameraMovement : MonoBehaviour
         mainPosition.z = currentZ = targetZ;
         zoomCoroutine = null;
     }
+
+    //public static void 
 }
