@@ -13,6 +13,7 @@ public class CameraMovement : MonoBehaviour
     private Vector3 mainRotation;
     private Vector3 rotationOffset = Vector3.zero;
     private Transform positionTrackingTarget;
+    private Transform rotationTrackingTarget;
     private float currentZ;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
@@ -35,7 +36,7 @@ public class CameraMovement : MonoBehaviour
         currentZ = transform.position.z;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         transform.position = mainPosition;
         transform.rotation = Quaternion.Euler(mainRotation + rotationOffset);
@@ -82,7 +83,6 @@ public class CameraMovement : MonoBehaviour
             }
 
             mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
-            panCoroutine = null;
         }
         else
         {
@@ -91,7 +91,7 @@ public class CameraMovement : MonoBehaviour
                 targetPosition = positionTrackingTarget.transform.position + offset;
                 if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
                 {
-                    float posZ = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
+                    float posX = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
 
                     float posY;
                     if (
@@ -107,7 +107,7 @@ public class CameraMovement : MonoBehaviour
                     }
 
                     mainPosition = new Vector3(
-                        posZ,
+                        posX,
                         posY,
                         currentZ
                     );
@@ -115,6 +115,7 @@ public class CameraMovement : MonoBehaviour
                 yield return null;
             }
         }
+        panCoroutine = null;
     }
 
     public static void CameraZoomTo(float targetZ, float duration)
@@ -145,17 +146,29 @@ public class CameraMovement : MonoBehaviour
         zoomCoroutine = null;
     }
 
-    public static void CameraRotateTo(Vector3 targetRotation, float duration)
+    public static void RotateTo(Vector3 targetRotation, float duration)
     {
         if (Instance.rotationCoroutine != null)
         {
             Instance.StopCoroutine(Instance.rotationCoroutine);
         }
         Instance.canStopRotation = true;
-        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(targetRotation, duration));
+        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(targetRotation, Vector3.zero, duration));
     }
 
-    private IEnumerator CameraRotationCoroutine(Vector3 targetRotation, float duration)
+    public static void RotationTracking(Transform target, Vector3 offset)
+    {
+        if (Instance.rotationCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.rotationCoroutine);
+        }
+
+        Instance.rotationTrackingTarget = target;
+        Instance.canStopRotation = false;
+        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(Vector3.zero, offset, 1019.1019f));
+    }
+
+    private IEnumerator CameraRotationCoroutine(Vector3 targetRotation, Vector3 offset, float duration)
     {
         if (canStopRotation)
         {
@@ -171,9 +184,26 @@ public class CameraMovement : MonoBehaviour
                     yield return null;
                 }
             }
-
             mainRotation = targetRotation;
-            rotationCoroutine = null;
         }
+        else
+        {
+            while (true)
+            {
+                Vector3 targetDirection = (rotationTrackingTarget.position - mainPosition).normalized;
+                Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
+                Vector3 desiredEulerAngles = desiredRotation.eulerAngles;
+
+                float x = Mathf.LerpAngle(mainRotation.x, desiredEulerAngles.x, cameraTrackingSpeed * Time.deltaTime);
+                float y = Mathf.LerpAngle(mainRotation.y, desiredEulerAngles.y, cameraTrackingSpeed * Time.deltaTime);
+                float z = Mathf.LerpAngle(mainRotation.z, desiredEulerAngles.z, cameraTrackingSpeed * Time.deltaTime);
+
+                mainRotation = new Vector3(x, y, z);
+
+                yield return null;
+            }
+        }
+
+        rotationCoroutine = null;
     }
 }

@@ -14,5 +14,10 @@ public class CameraControl : MonoBehaviour
         {
             CameraMovement.TargetTracking(target, new Vector3(0, 2, 0));
         }
+
+        if(Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            CameraMovement.RotationTracking(target, Vector3.zero);
+        }
     }
 }
