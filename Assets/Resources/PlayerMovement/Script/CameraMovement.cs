@@ -19,10 +19,12 @@ public class CameraMovement : MonoBehaviour
     private float currentZ;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
+    private bool isRotating = false;
     private Coroutine panCoroutine;
     private Coroutine zoomCoroutine;
     private Coroutine rotationCoroutine;
     private Coroutine positionShakingCoroutine;
+    private Coroutine normalizeCoroutine;
 
     private void Awake()
     {
@@ -37,6 +39,14 @@ public class CameraMovement : MonoBehaviour
 
         mainPosition = transform.position;
         currentZ = transform.position.z;
+    }
+
+    private void Update()
+    {
+        if (normalizeRotation && !isRotating)
+        {
+            mainRotation = NormalizeAngles(mainRotation);
+        }
     }
 
     private void LateUpdate()
@@ -56,6 +66,7 @@ public class CameraMovement : MonoBehaviour
 
         return new Vector3(x, y, z);
     }
+
     /// <summary>
     /// 인수 : 위치 - 기간
     /// </summary>
@@ -176,6 +187,7 @@ public class CameraMovement : MonoBehaviour
             Instance.StopCoroutine(Instance.rotationCoroutine);
         }
         Instance.canStopRotation = true;
+        Instance.isRotating = true;
         Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(targetRotation, Vector3.zero, duration));
     }
     /// <summary>
@@ -233,26 +245,26 @@ public class CameraMovement : MonoBehaviour
         {
             while (true)
             {
-                Vector3 targetDirection = ((rotationTrackingTarget.position - mainPosition) + offset).normalized;
-                Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
-                Vector3 desiredEulerAngles = desiredRotation.eulerAngles;
+                Vector3 targetDirection = rotationTrackingTarget.position - mainPosition;
 
-                float x = Mathf.LerpAngle(mainRotation.x, desiredEulerAngles.x, cameraTrackingSpeed * Time.deltaTime);
-                float y = Mathf.LerpAngle(mainRotation.y, desiredEulerAngles.y, cameraTrackingSpeed * Time.deltaTime);
-                float z = Mathf.LerpAngle(mainRotation.z, desiredEulerAngles.z, cameraTrackingSpeed * Time.deltaTime);
+                if (targetDirection == Vector3.zero)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
+                Vector3 finalTargetEulerAngles = desiredRotation.eulerAngles + offset;
+
+                float x = Mathf.LerpAngle(mainRotation.x, finalTargetEulerAngles.x, cameraTrackingSpeed * Time.deltaTime);
+                float y = Mathf.LerpAngle(mainRotation.y, finalTargetEulerAngles.y, cameraTrackingSpeed * Time.deltaTime);
+                float z = Mathf.LerpAngle(mainRotation.z, finalTargetEulerAngles.z, cameraTrackingSpeed * Time.deltaTime);
 
                 mainRotation = new Vector3(x, y, z);
-
                 yield return null;
             }
-        }
 
-        rotationCoroutine = null;
-
-        if (normalizeRotation)
-        {
-            mainRotation = NormalizeAngles(mainRotation);
-        }
+        }    
     }
 
     /// <summary>
