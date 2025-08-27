@@ -1,5 +1,7 @@
 using System.Collections;
+using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,7 +9,7 @@ public class CameraMovement : MonoBehaviour
 {
     public static CameraMovement Instance;
     public static float Threshold = 0.05f;
-    public static float cameraTrackingSpeed = 10f;
+    public static float cameraTrackingSpeed = 8f;
     public static float toleranceY = 3.5f;
     public static float yTrackingDampening = 3f;
 
@@ -22,6 +24,7 @@ public class CameraMovement : MonoBehaviour
     private bool canStopRotation = false;
     private Coroutine panCoroutine;
     private Coroutine zoomCoroutine;
+    private Coroutine rotationCoroutine;
 
     private void Awake()
     {
@@ -46,35 +49,24 @@ public class CameraMovement : MonoBehaviour
 
     public static void CameraPanTo(Vector2 targetPosition, float duration)
     {
-        Instance.CameraPanTo_(targetPosition, duration);
-    }
-
-    private void CameraPanTo_(Vector2 targetPosition, float duration)
-    {
-        if (panCoroutine != null)
+        if (Instance.panCoroutine != null)
         {
-            StopCoroutine(panCoroutine);
+            Instance.StopCoroutine(Instance.panCoroutine);
         }
-
-        canStopMovement = true;
-        panCoroutine = StartCoroutine(CameraPanCoroutine(targetPosition, duration));
+        Instance.canStopMovement = true;
+        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraPanCoroutine(targetPosition, duration));
     }
 
     public static void CameraFollow(Transform targetPosition)
     {
-        Instance.CameraFollow_(targetPosition);
-    }
-
-    private void CameraFollow_(Transform targetPosition)
-    {
-        if (panCoroutine != null)
+        if (Instance.panCoroutine != null)
         {
-            StopCoroutine(panCoroutine);
+            Instance.StopCoroutine(Instance.panCoroutine);
         }
 
-        canStopMovement = false;
-        positionTrackingTarget = targetPosition;
-        panCoroutine = StartCoroutine(CameraPanCoroutine(mainPosition, 0f));
+        Instance.canStopMovement = false;
+        Instance.positionTrackingTarget = targetPosition;
+        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraPanCoroutine(Vector3.zero, 1019.1019f));
     }
 
     private IEnumerator CameraPanCoroutine(Vector2 targetPosition, float duration)
@@ -133,17 +125,12 @@ public class CameraMovement : MonoBehaviour
 
     public static void CameraZoomTo(float targetZ, float duration)
     {
-        Instance.CameraZoomTo_(-targetZ, duration);
-    }
-
-    private void CameraZoomTo_(float targetZ, float duration)
-    {
-        if (zoomCoroutine != null)
+        if (Instance.zoomCoroutine != null)
         {
-            StopCoroutine(zoomCoroutine);
+            Instance.StopCoroutine(Instance.zoomCoroutine);
         }
 
-        zoomCoroutine = StartCoroutine(CameraZoomCoroutine(targetZ, duration));
+        Instance.zoomCoroutine = Instance.StartCoroutine(Instance.CameraZoomCoroutine(-targetZ, duration));
     }
 
     private IEnumerator CameraZoomCoroutine(float targetZ, float duration)
@@ -164,5 +151,35 @@ public class CameraMovement : MonoBehaviour
         zoomCoroutine = null;
     }
 
-    //public static void 
+    public static void CameraRotateTo(Vector3 targetRotation, float duration)
+    {
+        if (Instance.rotationCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.rotationCoroutine);
+        }
+        Instance.canStopRotation = true;
+        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(targetRotation, duration));
+    }
+
+    private IEnumerator CameraRotationCoroutine(Vector3 targetRotation, float duration)
+    {
+        if (canStopRotation)
+        {
+            if (duration > 0)
+            {
+                Vector3 startRotation = mainRotation;
+                float elapsedTime = 0f;
+
+                while (elapsedTime < duration)
+                {
+                    mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+            }
+
+            mainRotation = targetRotation;
+            rotationCoroutine = null;
+        }
+    }
 }

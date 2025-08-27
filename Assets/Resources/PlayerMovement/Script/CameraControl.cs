@@ -34,5 +34,20 @@ public class CameraControl : MonoBehaviour
         {
             CameraMovement.CameraZoomTo(20f, 0.2f);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            CameraMovement.CameraRotateTo(Vector3.zero, 1f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            CameraMovement.CameraRotateTo(new Vector3(20, 45, 0), 0.5f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            CameraMovement.CameraRotateTo(new Vector3(0, 20, 0), 0f);
+        }
     }
 }
