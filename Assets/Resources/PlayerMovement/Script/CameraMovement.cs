@@ -39,7 +39,7 @@ public class CameraMovement : MonoBehaviour
     private void LateUpdate()
     {
         transform.position = mainPosition;
-        transform.rotation = Quaternion.Euler(mainRotation + rotationOffset);
+        transform.rotation = Quaternion.Euler(mainRotation);
     }
 
     public static void DollyTo(Vector2 targetPosition, float duration)
@@ -190,7 +190,7 @@ public class CameraMovement : MonoBehaviour
         {
             while (true)
             {
-                Vector3 targetDirection = (rotationTrackingTarget.position - mainPosition).normalized;
+                Vector3 targetDirection = ((rotationTrackingTarget.position - mainPosition) + offset).normalized;
                 Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
                 Vector3 desiredEulerAngles = desiredRotation.eulerAngles;
 
