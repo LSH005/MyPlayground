@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
         if (isQuickTurning)
         {
             quickTrunTimeCounter += Time.deltaTime;
-            if (quickTrunTimeCounter >= quickTrunTime && isGrounded)
+            if ((quickTrunTimeCounter >= quickTrunTime && isGrounded) || isCrashingWall)
             {
                 isQuickTurning = false;
                 anim.SetBool("isQuickTurning", false);
