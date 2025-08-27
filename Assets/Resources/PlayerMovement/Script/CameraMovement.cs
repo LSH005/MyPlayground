@@ -57,7 +57,7 @@ public class CameraMovement : MonoBehaviour
         Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraPanCoroutine(targetPosition, duration));
     }
 
-    public static void CameraFollow(Transform targetPosition)
+    public static void CameraFollow(Transform targetPosition, Vector3 offset)
     {
         if (Instance.panCoroutine != null)
         {
@@ -66,6 +66,7 @@ public class CameraMovement : MonoBehaviour
 
         Instance.canStopMovement = false;
         Instance.positionTrackingTarget = targetPosition;
+        Instance.positionOffset = offset;
         Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraPanCoroutine(Vector3.zero, 1019.1019f));
     }
 
