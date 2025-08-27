@@ -140,12 +140,13 @@ public class PlayerController : MonoBehaviour
         // 제 4대 방향키 동작 코드
 
         isRunning = Mathf.Abs(moveInput) > 0.1f;
+        
         if (isRunning != anim.GetBool("isRunning")) anim.SetBool("isRunning", isRunning);
 
-        // 퀵턴
         if (isRunning)
         {
-            if (CheckFlipOutput() && afterMoveInput < 0.1f && !isQuickTurning && isGrounded && inputHoldTime > quickTrunTime*2)
+            // 퀵턴
+            if (CheckFlipOutput() && afterMoveInput < 0.1f && !isQuickTurning && isGrounded && inputHoldTime > quickTrunTime * 2)
             {
                 isQuickTurning = true;
                 anim.SetBool("isQuickTurning", true);
@@ -155,6 +156,9 @@ public class PlayerController : MonoBehaviour
 
             afterMoveInput = 0;
             inputHoldTime += Time.deltaTime;
+
+            if (!isCrashingWall) anim.SetBool("isRunning", true);
+            else anim.SetBool("isRunning", false);
         }
         else
         {
@@ -163,6 +167,8 @@ public class PlayerController : MonoBehaviour
             {
                 inputHoldTime = 0;
             }
+
+            anim.SetBool("isRunning", false);
         }
 
         if (wallRunStiffnessTimeCounter > 0)
