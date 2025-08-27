@@ -9,5 +9,10 @@ public class CameraControl : MonoBehaviour
         {
             CameraMovement.CameraFollow(target, Vector3.zero);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            CameraMovement.CameraFollow(target, new Vector3(0, 2, 0));
+        }
     }
 }

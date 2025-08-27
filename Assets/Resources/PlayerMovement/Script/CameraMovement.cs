@@ -1,9 +1,5 @@
 using System.Collections;
-using TMPro;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class CameraMovement : MonoBehaviour
 {
@@ -16,9 +12,8 @@ public class CameraMovement : MonoBehaviour
     private Vector3 mainPosition;
     private Vector3 positionOffset = Vector3.zero;
     private Vector3 mainRotation;
-    private Vector3 rotationOffset;
+    private Vector3 rotationOffset = Vector3.zero;
     private Transform positionTrackingTarget;
-    private Vector2 positionTrackingOffset = Vector2.zero;
     private float currentZ;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
@@ -43,7 +38,7 @@ public class CameraMovement : MonoBehaviour
 
     private void Update()
     {
-        transform.position = mainPosition + positionOffset;
+        transform.position = mainPosition;
         transform.rotation = Quaternion.Euler(mainRotation + rotationOffset);
     }
 
@@ -95,7 +90,7 @@ public class CameraMovement : MonoBehaviour
         {
             while (true)
             {
-                targetPosition = positionTrackingTarget.transform.position;
+                targetPosition = positionTrackingTarget.transform.position + positionOffset;
                 if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
                 {
                     float posZ = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
