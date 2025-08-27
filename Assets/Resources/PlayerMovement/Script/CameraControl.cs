@@ -7,12 +7,12 @@ public class CameraControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            CameraMovement.CameraFollow(target, Vector3.zero);
+            CameraMovement.TargetTracking(target, Vector3.zero);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            CameraMovement.CameraFollow(target, new Vector3(0, 2, 0));
+            CameraMovement.TargetTracking(target, new Vector3(0, 2, 0));
         }
     }
 }

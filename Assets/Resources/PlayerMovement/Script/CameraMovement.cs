@@ -10,7 +10,6 @@ public class CameraMovement : MonoBehaviour
     public static float yTrackingDampening = 3f;
 
     private Vector3 mainPosition;
-    private Vector3 positionOffset = Vector3.zero;
     private Vector3 mainRotation;
     private Vector3 rotationOffset = Vector3.zero;
     private Transform positionTrackingTarget;
@@ -42,17 +41,17 @@ public class CameraMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(mainRotation + rotationOffset);
     }
 
-    public static void CameraPanTo(Vector2 targetPosition, float duration)
+    public static void DollyTo(Vector2 targetPosition, float duration)
     {
         if (Instance.panCoroutine != null)
         {
             Instance.StopCoroutine(Instance.panCoroutine);
         }
         Instance.canStopMovement = true;
-        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraPanCoroutine(targetPosition, duration));
+        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraMoveCoroutine(targetPosition,Vector3.zero, duration));
     }
 
-    public static void CameraFollow(Transform targetPosition, Vector3 offset)
+    public static void TargetTracking(Transform targetPosition, Vector3 offset)
     {
         if (Instance.panCoroutine != null)
         {
@@ -61,11 +60,10 @@ public class CameraMovement : MonoBehaviour
 
         Instance.canStopMovement = false;
         Instance.positionTrackingTarget = targetPosition;
-        Instance.positionOffset = offset;
-        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraPanCoroutine(Vector3.zero, 1019.1019f));
+        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraMoveCoroutine(Vector3.zero, offset, 1019.1019f));
     }
 
-    private IEnumerator CameraPanCoroutine(Vector2 targetPosition, float duration)
+    private IEnumerator CameraMoveCoroutine(Vector2 targetPosition, Vector3 offset, float duration)
     {
         if (canStopMovement)
         {
@@ -90,7 +88,7 @@ public class CameraMovement : MonoBehaviour
         {
             while (true)
             {
-                targetPosition = positionTrackingTarget.transform.position + positionOffset;
+                targetPosition = positionTrackingTarget.transform.position + offset;
                 if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
                 {
                     float posZ = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
