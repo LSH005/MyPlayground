@@ -7,22 +7,27 @@ public class CameraControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            CameraMovement.RotateTo(new Vector3(-45, 0, 0), 2f);
+            CameraMovement.TargetTracking(target, Vector3.zero);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            CameraMovement.RotateTo(new Vector3(-4, 40, -20), 2f);
+            CameraMovement.RotationTracking(target, Vector3.zero);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            CameraMovement.RotateTo(Vector3.zero, 3f);
+            CameraMovement.PositionShaking(1f, 0.025f, 0.5f);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            CameraMovement.RotateTo(new Vector3(0, 0, -360), 3f);
+            CameraMovement.PositionShaking(0.2f, 0.04f, 5f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            CameraMovement.PositionShaking(100f, (5/10), 5f);
         }
     }
 }

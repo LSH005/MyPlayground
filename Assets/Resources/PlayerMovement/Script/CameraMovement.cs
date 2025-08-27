@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    public static CameraMovement Instance;
+    public static CameraMovement Instance { get; private set; }
     public static float Threshold = 0.05f;
     public static float cameraTrackingSpeed = 8f;
     public static float toleranceY = 3.5f;
@@ -11,6 +11,7 @@ public class CameraMovement : MonoBehaviour
     public static bool normalizeRotation = true;
 
     private Vector3 mainPosition;
+    private Vector2 shakePositionOffset = Vector2.zero;
     private Vector3 mainRotation;
     private Vector3 rotationOffset = Vector3.zero;
     private Transform positionTrackingTarget;
@@ -21,6 +22,7 @@ public class CameraMovement : MonoBehaviour
     private Coroutine panCoroutine;
     private Coroutine zoomCoroutine;
     private Coroutine rotationCoroutine;
+    private Coroutine positionShakingCoroutine;
 
     private void Awake()
     {
@@ -39,7 +41,7 @@ public class CameraMovement : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.position = mainPosition;
+        transform.position = mainPosition + new Vector3(shakePositionOffset.x, shakePositionOffset.y, 0f);
         transform.rotation = Quaternion.Euler(mainRotation);
     }
     private Vector3 NormalizeAngles(Vector3 angles)
@@ -54,7 +56,9 @@ public class CameraMovement : MonoBehaviour
 
         return new Vector3(x, y, z);
     }
-
+    /// <summary>
+    /// 인수 : 위치 - 기간
+    /// </summary>
     public static void DollyTo(Vector2 targetPosition, float duration)
     {
         if (Instance.panCoroutine != null)
@@ -64,7 +68,9 @@ public class CameraMovement : MonoBehaviour
         Instance.canStopMovement = true;
         Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraMoveCoroutine(targetPosition,Vector3.zero, duration));
     }
-
+    /// <summary>
+    /// 인수 : 타겟 - 오프셋
+    /// </summary>
     public static void TargetTracking(Transform targetPosition, Vector3 offset)
     {
         if (Instance.panCoroutine != null)
@@ -130,8 +136,10 @@ public class CameraMovement : MonoBehaviour
         }
         panCoroutine = null;
     }
-
-    public static void CameraZoomTo(float targetZ, float duration)
+    /// <summary>
+    /// 인수 : Z좌표 - 기간
+    /// </summary>
+    public static void PositionZoom(float targetZ, float duration)
     {
         if (Instance.zoomCoroutine != null)
         {
@@ -158,7 +166,9 @@ public class CameraMovement : MonoBehaviour
         mainPosition.z = currentZ = targetZ;
         zoomCoroutine = null;
     }
-
+    /// <summary>
+    /// 인수 : 각도 - 기간
+    /// </summary>
     public static void RotateTo(Vector3 targetRotation, float duration)
     {
         if (Instance.rotationCoroutine != null)
@@ -168,7 +178,9 @@ public class CameraMovement : MonoBehaviour
         Instance.canStopRotation = true;
         Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(targetRotation, Vector3.zero, duration));
     }
-
+    /// <summary>
+    /// 인수 : 타겟 - 오프셋
+    /// </summary>
     public static void RotationTracking(Transform target, Vector3 offset)
     {
         if (Instance.rotationCoroutine != null)
@@ -194,7 +206,13 @@ public class CameraMovement : MonoBehaviour
                 {
                     while (elapsedTime < duration)
                     {
-                        mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
+                        float t = elapsedTime / duration;
+
+                        float x = Mathf.LerpAngle(startRotation.x, targetRotation.x, t);
+                        float y = Mathf.LerpAngle(startRotation.y, targetRotation.y, t);
+                        float z = Mathf.LerpAngle(startRotation.z, targetRotation.z, t);
+
+                        mainRotation = new Vector3(x, y, z);
                         elapsedTime += Time.deltaTime;
                         yield return null;
                     }
@@ -203,13 +221,7 @@ public class CameraMovement : MonoBehaviour
                 {
                     while (elapsedTime < duration)
                     {
-                        float t = elapsedTime / duration;
-
-                        float x = Mathf.LerpAngle(startRotation.x, targetRotation.x, t);
-                        float y = Mathf.LerpAngle(startRotation.y, targetRotation.y, t);
-                        float z = Mathf.LerpAngle(startRotation.z, targetRotation.z, t);
-
-                        mainRotation = new Vector3(x, y, z);
+                        mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
                         elapsedTime += Time.deltaTime;
                         yield return null;
                     }
@@ -241,5 +253,51 @@ public class CameraMovement : MonoBehaviour
         {
             mainRotation = NormalizeAngles(mainRotation);
         }
+    }
+
+    /// <summary>
+    /// 인수 : 강도 - 주기 - 기간
+    /// </summary>
+    public static void PositionShaking(float intensity, float period, float duration)
+    {
+        if (Instance.positionShakingCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.positionShakingCoroutine);
+        }
+
+        Instance.positionShakingCoroutine = Instance.StartCoroutine(Instance.PositionShakingCoroutine(intensity, period, duration));
+    }
+
+    IEnumerator PositionShakingCoroutine(float intensity, float period, float duration)
+    {
+        float elapsedTime = 0f; // 총 경과 시간
+        float periodTimer = 0f; // 주기 내 시간
+
+        Vector2 startPoint = Vector2.zero;
+        Vector2 targetPoint = Vector2.zero;
+
+        while (elapsedTime < duration)
+        {
+            if (periodTimer >= period || elapsedTime == 0f)
+            {
+                periodTimer = 0f;
+                startPoint = shakePositionOffset;
+
+                float currentIntensity = intensity * (1 - (elapsedTime / duration));
+
+                // Random.insideUnitCircle.normalized : 길이가 1인 랜덤 방향 벡터
+                targetPoint = Random.insideUnitCircle.normalized * currentIntensity;
+            }
+
+            elapsedTime += Time.deltaTime;
+            periodTimer += Time.deltaTime;
+
+            shakePositionOffset = Vector2.Lerp(startPoint, targetPoint, periodTimer / period);
+
+            yield return null;
+        }
+
+        shakePositionOffset = Vector2.zero;
+        positionShakingCoroutine = null;
     }
 }
