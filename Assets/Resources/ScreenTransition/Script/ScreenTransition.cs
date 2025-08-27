@@ -22,8 +22,6 @@ public class ScreenTransition : MonoBehaviour
     private GameObject curtainInstance;
     private SpriteRenderer curtainRenderer;
 
-
-
     private void Awake()
     {
         if (Instance == null)

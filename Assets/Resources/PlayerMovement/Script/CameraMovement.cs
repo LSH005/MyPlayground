@@ -8,6 +8,7 @@ public class CameraMovement : MonoBehaviour
     public static float cameraTrackingSpeed = 8f;
     public static float toleranceY = 3.5f;
     public static float yTrackingDampening = 3f;
+    public static bool normalizeRotation = true;
 
     private Vector3 mainPosition;
     private Vector3 mainRotation;
@@ -40,6 +41,18 @@ public class CameraMovement : MonoBehaviour
     {
         transform.position = mainPosition;
         transform.rotation = Quaternion.Euler(mainRotation);
+    }
+    private Vector3 NormalizeAngles(Vector3 angles)
+    {
+        float x = angles.x % 360f;
+        float y = angles.y % 360f;
+        float z = angles.z % 360f;
+
+        if (x < 0) x += 360f;
+        if (y < 0) y += 360f;
+        if (z < 0) z += 360f;
+
+        return new Vector3(x, y, z);
     }
 
     public static void DollyTo(Vector2 targetPosition, float duration)
@@ -177,11 +190,29 @@ public class CameraMovement : MonoBehaviour
                 Vector3 startRotation = mainRotation;
                 float elapsedTime = 0f;
 
-                while (elapsedTime < duration)
+                if (normalizeRotation)
                 {
-                    mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
-                    elapsedTime += Time.deltaTime;
-                    yield return null;
+                    while (elapsedTime < duration)
+                    {
+                        mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
+                        elapsedTime += Time.deltaTime;
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    while (elapsedTime < duration)
+                    {
+                        float t = elapsedTime / duration;
+
+                        float x = Mathf.LerpAngle(startRotation.x, targetRotation.x, t);
+                        float y = Mathf.LerpAngle(startRotation.y, targetRotation.y, t);
+                        float z = Mathf.LerpAngle(startRotation.z, targetRotation.z, t);
+
+                        mainRotation = new Vector3(x, y, z);
+                        elapsedTime += Time.deltaTime;
+                        yield return null;
+                    }
                 }
             }
             mainRotation = targetRotation;
@@ -205,5 +236,10 @@ public class CameraMovement : MonoBehaviour
         }
 
         rotationCoroutine = null;
+
+        if (normalizeRotation)
+        {
+            mainRotation = NormalizeAngles(mainRotation);
+        }
     }
 }
