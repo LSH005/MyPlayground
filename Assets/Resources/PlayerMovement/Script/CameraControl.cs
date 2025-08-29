@@ -22,7 +22,7 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            CameraMovement.ExplodingFOV(20, 1, 1);
+            CameraMovement.RotateTo(Vector3.zero, 0.5f);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha5))

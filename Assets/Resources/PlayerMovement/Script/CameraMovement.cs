@@ -11,6 +11,8 @@ public class CameraMovement : MonoBehaviour
     public static float yTrackingDampening = 3f;
     public static bool normalizeRotation = true;
 
+    public bool isRotating { get; private set; } = false;
+
     private Vector3 mainPosition;
     private Vector2 shakePositionOffset = Vector2.zero;
     private Vector3 mainRotation;
@@ -21,7 +23,6 @@ public class CameraMovement : MonoBehaviour
     private float mainFOV = 60f;
     private float fovOffset = 0;
     private bool canStopRotation = false;
-    private bool isRotating = false;
     private Coroutine panCoroutine;
     private Coroutine zoomCoroutine;
     private Coroutine rotationCoroutine;
@@ -189,6 +190,94 @@ public class CameraMovement : MonoBehaviour
         zoomCoroutine = null;
     }
 
+
+    /// <summary>
+    /// 인수 : 각도 - 기간
+    /// </summary>
+    public static void RotateTo(Vector3 targetRotation, float duration)
+    {
+        if (Instance.rotationCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.rotationCoroutine);
+        }
+        Instance.isRotating = true;
+        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.RotateToCoroutine(targetRotation, duration));
+    }
+
+    private IEnumerator RotateToCoroutine(Vector3 targetRotation, float duration)
+    {
+        if (duration > 0)
+        {
+            Vector3 startRotation = mainRotation;
+            float elapsedTime = 0f;
+
+            if (normalizeRotation)
+            {
+                while (elapsedTime < duration)
+                {
+                    float t = elapsedTime / duration;
+
+                    float x = Mathf.LerpAngle(startRotation.x, targetRotation.x, t);
+                    float y = Mathf.LerpAngle(startRotation.y, targetRotation.y, t);
+                    float z = Mathf.LerpAngle(startRotation.z, targetRotation.z, t);
+
+                    mainRotation = new Vector3(x, y, z);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+            }
+            else
+            {
+                while (elapsedTime < duration)
+                {
+                    mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+            }
+        }
+        mainRotation = targetRotation;
+        isRotating = false;
+        rotationCoroutine = null;
+    }
+
+    /// <summary>
+    /// 인수 : 타겟 - 오프셋
+    /// </summary>
+    public static void RotationTracking(Transform target, Vector3 offset)
+    {
+        if (Instance.rotationCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.rotationCoroutine);
+        }
+        Instance.rotationTrackingTarget = target;
+        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.TrackRotationCoroutine(offset));
+    }
+
+    private IEnumerator TrackRotationCoroutine(Vector3 offset)
+    {
+        while (true)
+        {
+            Vector3 targetDirection = rotationTrackingTarget.position - mainPosition;
+
+            if (targetDirection == Vector3.zero)
+            {
+                yield return null;
+                continue;
+            }
+
+            Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
+            Vector3 finalTargetEulerAngles = desiredRotation.eulerAngles + offset;
+
+            float x = Mathf.LerpAngle(mainRotation.x, finalTargetEulerAngles.x, cameraTrackingSpeed * Time.deltaTime);
+            float y = Mathf.LerpAngle(mainRotation.y, finalTargetEulerAngles.y, cameraTrackingSpeed * Time.deltaTime);
+            float z = Mathf.LerpAngle(mainRotation.z, finalTargetEulerAngles.z, cameraTrackingSpeed * Time.deltaTime);
+
+            mainRotation = new Vector3(x, y, z);
+            yield return null;
+        }
+    }
+
     /// <summary>
     /// 인수 : 최대 거리 - 주기 - 기간
     /// </summary>
@@ -282,7 +371,7 @@ public class CameraMovement : MonoBehaviour
         while (returnTimer < period)
         {
             returnTimer += Time.deltaTime;
-            shakeRotationOffset = Mathf.LerpAngle(lastRotation, 0f, returnTimer / (period/2));
+            shakeRotationOffset = Mathf.LerpAngle(lastRotation, 0f, returnTimer / (period / 2));
 
             yield return null;
         }
