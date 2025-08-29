@@ -17,6 +17,8 @@ public class CameraMovement : MonoBehaviour
     private Transform rotationTrackingTarget;
     private float currentZ;
     private float shakeRotationOffset = 0f;
+    private float mainFOV = 60f;
+    private float fovOffset = 0;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
     private bool isRotating = false;
@@ -24,8 +26,9 @@ public class CameraMovement : MonoBehaviour
     private Coroutine zoomCoroutine;
     private Coroutine rotationCoroutine;
     private Coroutine positionShakingCoroutine;
-    private Coroutine normalizeCoroutine;
     private Coroutine rotationShakingCoroutine;
+    private Coroutine fovCoroutine;
+    private Camera cam;
 
     private void Awake()
     {
@@ -40,6 +43,13 @@ public class CameraMovement : MonoBehaviour
 
         mainPosition = transform.position;
         currentZ = transform.position.z;
+        cam = GetComponent<Camera>();
+
+        if (cam == null)
+        {
+            Debug.LogWarning("이 오브젝트는 카메라가 아님");
+            enabled = false;
+        }
     }
 
     private void Update()
@@ -54,6 +64,7 @@ public class CameraMovement : MonoBehaviour
     {
         transform.position = mainPosition + new Vector3(shakePositionOffset.x, shakePositionOffset.y, 0f);
         transform.rotation = Quaternion.Euler(new Vector3(mainRotation.x, mainRotation.y, mainRotation.z + shakeRotationOffset));
+        cam.fieldOfView = mainFOV + fovOffset;
     }
 
     private Vector3 NormalizeAngles(Vector3 angles)
@@ -369,5 +380,34 @@ public class CameraMovement : MonoBehaviour
 
         shakeRotationOffset = 0f;
         rotationShakingCoroutine = null;
+    }
+
+    /// <summary>
+    /// 인수 : 목표 FOV - 기간
+    /// </summary>
+    public static void SetFOV(float targetFOV, float duration)
+    {
+        if (Instance.fovCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.fovCoroutine);
+        }
+        Instance.fovCoroutine = Instance.StartCoroutine(Instance.CameraFovCoroutine(targetFOV, duration));
+    }
+
+    private IEnumerator CameraFovCoroutine(float targetFOV, float duration)
+    {
+        if (duration >= 0)
+        {
+            float elapsedTime = 0f;
+            float startFOV = cam.fieldOfView;
+            while (elapsedTime < duration)
+            {
+                mainFOV = Mathf.Lerp(startFOV, targetFOV, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+        mainFOV = targetFOV;
+        fovCoroutine = null;
     }
 }
