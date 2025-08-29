@@ -17,7 +17,7 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            CameraMovement.ExplodingFOV(30, 0.025f, 0.5f);
+            CameraMovement.DollyTo(Vector2.zero, 0.2f);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))

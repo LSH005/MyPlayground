@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
@@ -19,7 +20,6 @@ public class CameraMovement : MonoBehaviour
     private float shakeRotationOffset = 0f;
     private float mainFOV = 60f;
     private float fovOffset = 0;
-    private bool canStopMovement = false;
     private bool canStopRotation = false;
     private bool isRotating = false;
     private Coroutine panCoroutine;
@@ -90,9 +90,28 @@ public class CameraMovement : MonoBehaviour
         {
             Instance.StopCoroutine(Instance.panCoroutine);
         }
-        Instance.canStopMovement = true;
-        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraMoveCoroutine(targetPosition,Vector3.zero, duration));
+        Instance.panCoroutine = Instance.StartCoroutine(Instance.DollyCoroutine(targetPosition, duration));
     }
+
+    private IEnumerator DollyCoroutine(Vector2 targetPosition, float duration)
+    {
+        if (duration > 0)
+        {
+            Vector2 startPosition = mainPosition;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                Vector2 LerpPosition = Vector2.Lerp(startPosition, targetPosition, elapsedTime / duration);
+                mainPosition = new Vector3(LerpPosition.x, LerpPosition.y, currentZ);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+        mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
+        panCoroutine = null;
+    }
+
     /// <summary>
     /// 인수 : 타겟 - 오프셋
     /// </summary>
@@ -103,64 +122,42 @@ public class CameraMovement : MonoBehaviour
             Instance.StopCoroutine(Instance.panCoroutine);
         }
 
-        Instance.canStopMovement = false;
         Instance.positionTrackingTarget = targetPosition;
-        Instance.panCoroutine = Instance.StartCoroutine(Instance.CameraMoveCoroutine(Vector3.zero, offset, 1019.1019f));
+        Instance.panCoroutine = Instance.StartCoroutine(Instance.TrackTargetCoroutine(offset));
     }
 
-    private IEnumerator CameraMoveCoroutine(Vector2 targetPosition, Vector3 offset, float duration)
+    private IEnumerator TrackTargetCoroutine(Vector3 offset)
     {
-        if (canStopMovement)
+        while (true)
         {
-            if (duration > 0)
+            Vector2 targetPosition = positionTrackingTarget.transform.position + offset;
+            if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
             {
-                Vector2 startPosition = mainPosition;
-                float elapsedTime = 0f;
+                float posX = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
 
-                while (elapsedTime < duration)
+                float posY;
+                if (
+                    Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime)
+                    !=
+                    Mathf.Clamp(Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime), targetPosition.y - toleranceY, targetPosition.y + toleranceY))
                 {
-                    Vector2 LerpPosition = Vector2.Lerp(startPosition, targetPosition, elapsedTime / duration);
-                    mainPosition = new Vector3(LerpPosition.x, LerpPosition.y, currentZ);
-                    elapsedTime += Time.deltaTime;
-                    yield return null;
+                    posY = Mathf.Lerp(mainPosition.y, targetPosition.y, Mathf.Max(cameraTrackingSpeed * 1.75f, 10f) * Time.deltaTime);
                 }
-            }
-
-            mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
-        }
-        else
-        {
-            while (true)
-            {
-                targetPosition = positionTrackingTarget.transform.position + offset;
-                if ((mainPosition - new Vector3(targetPosition.x, targetPosition.y, currentZ)).sqrMagnitude > Threshold * Threshold)
+                else
                 {
-                    float posX = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
-
-                    float posY;
-                    if (
-                        Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime)
-                        !=
-                        Mathf.Clamp(Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime), targetPosition.y - toleranceY, targetPosition.y + toleranceY))
-                    {
-                        posY = Mathf.Lerp(mainPosition.y, targetPosition.y, Mathf.Max(cameraTrackingSpeed * 1.75f, 10f) * Time.deltaTime);
-                    }
-                    else
-                    {
-                        posY = Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime);
-                    }
-
-                    mainPosition = new Vector3(
-                        posX,
-                        posY,
-                        currentZ
-                    );
+                    posY = Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime);
                 }
-                yield return null;
+
+                mainPosition = new Vector3(
+                    posX,
+                    posY,
+                    currentZ
+                );
             }
+            yield return null;
         }
-        panCoroutine = null;
     }
+
     /// <summary>
     /// 인수 : Z좌표 - 기간
     /// </summary>
@@ -190,95 +187,6 @@ public class CameraMovement : MonoBehaviour
         }
         mainPosition.z = currentZ = targetZ;
         zoomCoroutine = null;
-    }
-    /// <summary>
-    /// 인수 : 각도 - 기간
-    /// </summary>
-    public static void RotateTo(Vector3 targetRotation, float duration)
-    {
-        if (Instance.rotationCoroutine != null)
-        {
-            Instance.StopCoroutine(Instance.rotationCoroutine);
-        }
-        Instance.canStopRotation = true;
-        Instance.isRotating = true;
-        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(targetRotation, Vector3.zero, duration));
-    }
-    /// <summary>
-    /// 인수 : 타겟 - 오프셋
-    /// </summary>
-    public static void RotationTracking(Transform target, Vector3 offset)
-    {
-        if (Instance.rotationCoroutine != null)
-        {
-            Instance.StopCoroutine(Instance.rotationCoroutine);
-        }
-
-        Instance.rotationTrackingTarget = target;
-        Instance.canStopRotation = false;
-        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.CameraRotationCoroutine(Vector3.zero, offset, 1019.1019f));
-    }
-
-    private IEnumerator CameraRotationCoroutine(Vector3 targetRotation, Vector3 offset, float duration)
-    {
-        if (canStopRotation)
-        {
-            if (duration > 0)
-            {
-                Vector3 startRotation = mainRotation;
-                float elapsedTime = 0f;
-
-                if (normalizeRotation)
-                {
-                    while (elapsedTime < duration)
-                    {
-                        float t = elapsedTime / duration;
-
-                        float x = Mathf.LerpAngle(startRotation.x, targetRotation.x, t);
-                        float y = Mathf.LerpAngle(startRotation.y, targetRotation.y, t);
-                        float z = Mathf.LerpAngle(startRotation.z, targetRotation.z, t);
-
-                        mainRotation = new Vector3(x, y, z);
-                        elapsedTime += Time.deltaTime;
-                        yield return null;
-                    }
-                }
-                else
-                {
-                    while (elapsedTime < duration)
-                    {
-                        mainRotation = Vector3.Lerp(startRotation, targetRotation, elapsedTime / duration);
-                        elapsedTime += Time.deltaTime;
-                        yield return null;
-                    }
-                }
-            }
-            mainRotation = targetRotation;
-        }
-        else
-        {
-            while (true)
-            {
-                Vector3 targetDirection = rotationTrackingTarget.position - mainPosition;
-
-                if (targetDirection == Vector3.zero)
-                {
-                    yield return null;
-                    continue;
-                }
-
-                Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
-                Vector3 finalTargetEulerAngles = desiredRotation.eulerAngles + offset;
-
-                float x = Mathf.LerpAngle(mainRotation.x, finalTargetEulerAngles.x, cameraTrackingSpeed * Time.deltaTime);
-                float y = Mathf.LerpAngle(mainRotation.y, finalTargetEulerAngles.y, cameraTrackingSpeed * Time.deltaTime);
-                float z = Mathf.LerpAngle(mainRotation.z, finalTargetEulerAngles.z, cameraTrackingSpeed * Time.deltaTime);
-
-                mainRotation = new Vector3(x, y, z);
-                yield return null;
-            }
-
-        }    
     }
 
     /// <summary>
