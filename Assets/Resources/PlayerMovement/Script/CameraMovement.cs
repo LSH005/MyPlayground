@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    public bool isRotating { get; private set; } = false;
+    public bool isMoving { get; private set; } = false;
+    public bool isTrackingRotation { get; private set; } = false;
+    public bool isTrackingPosition { get; private set; } = false;
+
     public static CameraMovement Instance { get; private set; }
     public static float Threshold = 0.05f;
     public static float cameraTrackingSpeed = 8f;
@@ -11,18 +16,16 @@ public class CameraMovement : MonoBehaviour
     public static float yTrackingDampening = 3f;
     public static bool normalizeRotation = true;
 
-    public bool isRotating { get; private set; } = false;
 
+    private float currentZ;
+    private float shakeRotationOffset = 0f;
+    private float mainFOV = 60f;
+    private float fovOffset = 0;
     private Vector3 mainPosition;
     private Vector2 shakePositionOffset = Vector2.zero;
     private Vector3 mainRotation;
     private Transform positionTrackingTarget;
     private Transform rotationTrackingTarget;
-    private float currentZ;
-    private float shakeRotationOffset = 0f;
-    private float mainFOV = 60f;
-    private float fovOffset = 0;
-    private bool canStopRotation = false;
     private Coroutine panCoroutine;
     private Coroutine zoomCoroutine;
     private Coroutine rotationCoroutine;
@@ -91,6 +94,8 @@ public class CameraMovement : MonoBehaviour
         {
             Instance.StopCoroutine(Instance.panCoroutine);
         }
+        Instance.isMoving = true;
+        Instance.isTrackingPosition = false;
         Instance.panCoroutine = Instance.StartCoroutine(Instance.DollyCoroutine(targetPosition, duration));
     }
 
@@ -110,6 +115,7 @@ public class CameraMovement : MonoBehaviour
             }
         }
         mainPosition = new Vector3(targetPosition.x, targetPosition.y, currentZ);
+        isMoving = false;
         panCoroutine = null;
     }
 
@@ -124,6 +130,8 @@ public class CameraMovement : MonoBehaviour
         }
 
         Instance.positionTrackingTarget = targetPosition;
+        Instance.isMoving = true;
+        Instance.isTrackingPosition = true;
         Instance.panCoroutine = Instance.StartCoroutine(Instance.TrackTargetCoroutine(offset));
     }
 
@@ -160,38 +168,6 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : Z좌표 - 기간
-    /// </summary>
-    public static void PositionZoom(float targetZ, float duration)
-    {
-        if (Instance.zoomCoroutine != null)
-        {
-            Instance.StopCoroutine(Instance.zoomCoroutine);
-        }
-
-        Instance.zoomCoroutine = Instance.StartCoroutine(Instance.CameraZoomCoroutine(-targetZ, duration));
-    }
-
-    private IEnumerator CameraZoomCoroutine(float targetZ, float duration)
-    {
-        if (duration > 0)
-        {
-            float startZ = currentZ;
-            float elapsedTime = 0f;
-
-            while (elapsedTime < duration)
-            {
-                mainPosition.z = currentZ = Mathf.Lerp(startZ, targetZ, elapsedTime / duration);
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
-        }
-        mainPosition.z = currentZ = targetZ;
-        zoomCoroutine = null;
-    }
-
-
-    /// <summary>
     /// 인수 : 각도 - 기간
     /// </summary>
     public static void RotateTo(Vector3 targetRotation, float duration)
@@ -201,6 +177,7 @@ public class CameraMovement : MonoBehaviour
             Instance.StopCoroutine(Instance.rotationCoroutine);
         }
         Instance.isRotating = true;
+        Instance.isTrackingRotation = false;
         Instance.rotationCoroutine = Instance.StartCoroutine(Instance.RotateToCoroutine(targetRotation, duration));
     }
 
@@ -251,6 +228,8 @@ public class CameraMovement : MonoBehaviour
             Instance.StopCoroutine(Instance.rotationCoroutine);
         }
         Instance.rotationTrackingTarget = target;
+        Instance.isRotating = true;
+        Instance.isTrackingRotation = true;
         Instance.rotationCoroutine = Instance.StartCoroutine(Instance.TrackRotationCoroutine(offset));
     }
 
@@ -276,6 +255,37 @@ public class CameraMovement : MonoBehaviour
             mainRotation = new Vector3(x, y, z);
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// 인수 : Z좌표 - 기간
+    /// </summary>
+    public static void PositionZoom(float targetZ, float duration)
+    {
+        if (Instance.zoomCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.zoomCoroutine);
+        }
+
+        Instance.zoomCoroutine = Instance.StartCoroutine(Instance.CameraZoomCoroutine(-targetZ, duration));
+    }
+
+    private IEnumerator CameraZoomCoroutine(float targetZ, float duration)
+    {
+        if (duration > 0)
+        {
+            float startZ = currentZ;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                mainPosition.z = currentZ = Mathf.Lerp(startZ, targetZ, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+        mainPosition.z = currentZ = targetZ;
+        zoomCoroutine = null;
     }
 
     /// <summary>
