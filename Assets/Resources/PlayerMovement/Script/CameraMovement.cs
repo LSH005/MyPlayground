@@ -28,6 +28,7 @@ public class CameraMovement : MonoBehaviour
     private Coroutine positionShakingCoroutine;
     private Coroutine rotationShakingCoroutine;
     private Coroutine fovCoroutine;
+    private Coroutine explodingFovCoroutine;
     private Camera cam;
 
     private void Awake()
@@ -391,12 +392,12 @@ public class CameraMovement : MonoBehaviour
         {
             Instance.StopCoroutine(Instance.fovCoroutine);
         }
-        Instance.fovCoroutine = Instance.StartCoroutine(Instance.CameraFovCoroutine(targetFOV, duration));
+        Instance.fovCoroutine = Instance.StartCoroutine(Instance.SetFovCoroutine(targetFOV, duration));
     }
 
-    private IEnumerator CameraFovCoroutine(float targetFOV, float duration)
+    private IEnumerator SetFovCoroutine(float targetFOV, float duration)
     {
-        if (duration >= 0)
+        if (duration > 0)
         {
             float elapsedTime = 0f;
             float startFOV = cam.fieldOfView;
@@ -409,5 +410,63 @@ public class CameraMovement : MonoBehaviour
         }
         mainFOV = targetFOV;
         fovCoroutine = null;
+    }
+
+    /// <summary>
+    /// 인수 : 목표 FOV 오프셋 - 확장 기간 - 축소 기간
+    /// </summary>
+    public static void ExplodingFOV(float targetFOV, float durationIn, float durationOut)
+    {
+        if (Instance.explodingFovCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.explodingFovCoroutine);
+        }
+        Instance.explodingFovCoroutine = Instance.StartCoroutine(Instance.ExplodingFOVCoroutine(targetFOV, durationIn, durationOut));
+    }
+
+    private IEnumerator ExplodingFOVCoroutine(float targetFovOffset, float durationIn, float durationOut)
+    {
+        float elapsedTime = 0f;
+
+        if (fovOffset != 0.0f)
+        {
+            float startFOV = fovOffset;
+            float BackupTime = durationIn * 0.1f;
+            durationIn -= BackupTime;
+
+            while (elapsedTime < BackupTime)
+            {
+                fovOffset = Mathf.Lerp(startFOV, 0.0f, elapsedTime / BackupTime);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            fovOffset = elapsedTime = 0.0f;
+        }
+
+        if (durationIn > 0)
+        {
+            float startFOV = fovOffset;
+            while (elapsedTime < durationIn)
+            {
+                fovOffset = Mathf.Lerp(startFOV, targetFovOffset, elapsedTime / durationIn);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            elapsedTime = 0.0f;
+        }
+        fovOffset = targetFovOffset;
+
+        if (durationOut > 0)
+        {
+            float startFOV = fovOffset;
+            while (elapsedTime < durationOut)
+            {
+                fovOffset = Mathf.Lerp(startFOV, 0.0f, elapsedTime / durationOut);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+        }
+        fovOffset = 0.0f;
+        explodingFovCoroutine = null;
     }
 }

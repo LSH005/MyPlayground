@@ -267,22 +267,22 @@ AnimatorStateMachine:
   m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions:
-  - first: {fileID: 5956160904339311959}
-    second:
-    - {fileID: -4825061981387805552}
-    - {fileID: -1605051913479250641}
-    - {fileID: -9037778075364068025}
-  - first: {fileID: 3915636876882073208}
-    second:
-    - {fileID: 829790853618108398}
-    - {fileID: 4285590025434639714}
-    - {fileID: 6307437705551287189}
   - first: {fileID: 1976761362312447985}
     second:
     - {fileID: -2240030664427147188}
     - {fileID: -8678394853790878716}
     - {fileID: 2385593429593553154}
     - {fileID: -2623491035359493844}
+  - first: {fileID: 3915636876882073208}
+    second:
+    - {fileID: 829790853618108398}
+    - {fileID: 4285590025434639714}
+    - {fileID: 6307437705551287189}
+  - first: {fileID: 5956160904339311959}
+    second:
+    - {fileID: -4825061981387805552}
+    - {fileID: -1605051913479250641}
+    - {fileID: -9037778075364068025}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: 70, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}

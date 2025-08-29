@@ -17,12 +17,12 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            CameraMovement.RotationShaking(90, 0.0375f, 3);
+            CameraMovement.ExplodingFOV(30, 0.025f, 0.5f);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            CameraMovement.SetFOV(110, 1);
+            CameraMovement.ExplodingFOV(20, 1, 1);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha5))
