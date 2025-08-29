@@ -33,8 +33,8 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            CameraMovement.PositionShaking(1, 0.035f, 1);
-            CameraMovement.RotationShaking(14, 0.05f, 1);
+            CameraMovement.TargetTracking(target, Vector3.zero);
+            CameraMovement.PositionTracking(Vector3.zero);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha5))

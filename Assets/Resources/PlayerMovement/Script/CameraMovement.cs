@@ -258,6 +258,45 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
+    /// 인수 : 위치
+    /// </summary>
+    public static void PositionTracking(Vector3 targetPosition)
+    {
+        if (Instance.rotationCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.rotationCoroutine);
+        }
+
+        Instance.isRotating = true;
+        Instance.isTrackingRotation = true;
+        Instance.rotationCoroutine = Instance.StartCoroutine(Instance.PositionTrackingCoroutine(targetPosition));
+    }
+
+    private IEnumerator PositionTrackingCoroutine(Vector3 targetPosition)
+    {
+        while (true)
+        {
+            Vector3 targetDirection = targetPosition - mainPosition;
+
+            if (targetDirection == Vector3.zero)
+            {
+                yield return null;
+                continue;
+            }
+
+            Quaternion desiredRotation = Quaternion.LookRotation(targetDirection);
+            Vector3 finalTargetEulerAngles = desiredRotation.eulerAngles;
+
+            float x = Mathf.LerpAngle(mainRotation.x, finalTargetEulerAngles.x, cameraTrackingSpeed * Time.deltaTime);
+            float y = Mathf.LerpAngle(mainRotation.y, finalTargetEulerAngles.y, cameraTrackingSpeed * Time.deltaTime);
+            float z = Mathf.LerpAngle(mainRotation.z, finalTargetEulerAngles.z, cameraTrackingSpeed * Time.deltaTime);
+
+            mainRotation = new Vector3(x, y, z);
+            yield return null;
+        }
+    }
+
+    /// <summary>
     /// 인수 : Z좌표 - 기간
     /// </summary>
     public static void PositionZoom(float targetZ, float duration)
