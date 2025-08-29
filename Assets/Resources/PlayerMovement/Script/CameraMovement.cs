@@ -13,10 +13,10 @@ public class CameraMovement : MonoBehaviour
     private Vector3 mainPosition;
     private Vector2 shakePositionOffset = Vector2.zero;
     private Vector3 mainRotation;
-    private Vector3 rotationOffset = Vector3.zero;
     private Transform positionTrackingTarget;
     private Transform rotationTrackingTarget;
     private float currentZ;
+    private float shakeRotationOffset = 0f;
     private bool canStopMovement = false;
     private bool canStopRotation = false;
     private bool isRotating = false;
@@ -25,6 +25,7 @@ public class CameraMovement : MonoBehaviour
     private Coroutine rotationCoroutine;
     private Coroutine positionShakingCoroutine;
     private Coroutine normalizeCoroutine;
+    private Coroutine rotationShakingCoroutine;
 
     private void Awake()
     {
@@ -52,8 +53,9 @@ public class CameraMovement : MonoBehaviour
     private void LateUpdate()
     {
         transform.position = mainPosition + new Vector3(shakePositionOffset.x, shakePositionOffset.y, 0f);
-        transform.rotation = Quaternion.Euler(mainRotation);
+        transform.rotation = Quaternion.Euler(new Vector3(mainRotation.x, mainRotation.y, mainRotation.z + shakeRotationOffset));
     }
+
     private Vector3 NormalizeAngles(Vector3 angles)
     {
         float x = angles.x % 360f;
@@ -268,7 +270,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : 강도 - 주기 - 기간
+    /// 인수 : 최대 거리 - 주기 - 기간
     /// </summary>
     public static void PositionShaking(float intensity, float period, float duration)
     {
@@ -311,5 +313,61 @@ public class CameraMovement : MonoBehaviour
 
         shakePositionOffset = Vector2.zero;
         positionShakingCoroutine = null;
+    }
+
+    /// <summary>
+    /// 인수 : 최대 각도 - 주기 - 기간
+    /// </summary>
+    public static void RotationShaking(float intensity, float period, float duration)
+    {
+        if (Instance.rotationShakingCoroutine != null)
+        {
+            Instance.StopCoroutine(Instance.rotationShakingCoroutine);
+        }
+
+        Instance.rotationShakingCoroutine = Instance.StartCoroutine(Instance.RotationShakingCoroutine(intensity, period, duration));
+    }
+    IEnumerator RotationShakingCoroutine(float intensity, float period, float duration)
+    {
+        float elapsedTime = 0f; // 총 경과 시간
+        float periodTimer = 0f; // 주기 내 시간
+
+        float startRotation = shakeRotationOffset;
+        float targetRotation = 0f;
+        int sign = 1;
+
+        while (elapsedTime < duration)
+        {
+            if (periodTimer >= period || elapsedTime == 0f)
+            {
+                periodTimer = 0f;
+
+                startRotation = shakeRotationOffset;
+                targetRotation = intensity * (1 - (elapsedTime / duration));
+                targetRotation *= sign;
+                sign = -sign;
+            }
+
+            elapsedTime += Time.deltaTime;
+            periodTimer += Time.deltaTime;
+
+            shakeRotationOffset = Mathf.LerpAngle(startRotation, targetRotation, periodTimer / period);
+
+            yield return null;
+        }
+
+        float lastRotation = shakeRotationOffset;
+        float returnTimer = 0f;
+
+        while (returnTimer < period)
+        {
+            returnTimer += Time.deltaTime;
+            shakeRotationOffset = Mathf.LerpAngle(lastRotation, 0f, returnTimer / (period/2));
+
+            yield return null;
+        }
+
+        shakeRotationOffset = 0f;
+        rotationShakingCoroutine = null;
     }
 }

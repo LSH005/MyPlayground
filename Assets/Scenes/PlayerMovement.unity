@@ -920,7 +920,7 @@ GameObject:
   - component: {fileID: 628573230}
   - component: {fileID: 628573229}
   m_Layer: 0
-  m_Name: CameraControl
+  m_Name: CameraControl (Test)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
