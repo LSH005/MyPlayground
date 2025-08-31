@@ -4218,7 +4218,7 @@ GameObject:
   - component: {fileID: 1740596689}
   - component: {fileID: 1740596686}
   m_Layer: 0
-  m_Name: TB_CameraPositionZoom
+  m_Name: TB_CameraSetFOV
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4311,11 +4311,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740596685}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41a0b300066e5ee4a9a7e3a53b4e26ab, type: 3}
+  m_Script: {fileID: 11500000, guid: 1333bdf59cda31844a0180c0e20aa56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   compareTag: Player
-  targetZ: 20
+  targetFOV: 100
   duration: 1
 --- !u!1 &1838424395
 GameObject:
