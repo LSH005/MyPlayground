@@ -12,7 +12,7 @@ public class CameraMovement : MonoBehaviour
     public static float Threshold = 0.05f;
     public static float cameraTrackingSpeed = 8f;
     public static float toleranceY = 3.5f;
-    public static float yTrackingDampening = 3f;
+    public static float yTrackingDampening = 2.25f;
     public static bool normalizeRotation = true;
 
 
@@ -144,17 +144,19 @@ public class CameraMovement : MonoBehaviour
                 float posX = Mathf.Lerp(mainPosition.x, targetPosition.x, cameraTrackingSpeed * Time.deltaTime);
 
                 float posY;
-                if (
-                    Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime)
-                    !=
-                    Mathf.Clamp(Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime), targetPosition.y - toleranceY, targetPosition.y + toleranceY))
-                {
-                    posY = Mathf.Lerp(mainPosition.y, targetPosition.y, Mathf.Max(cameraTrackingSpeed * 1.75f, 10f) * Time.deltaTime);
-                }
-                else
-                {
-                    posY = Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime);
-                }
+                //if (
+                //    Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime)
+                //    !=
+                //    Mathf.Clamp(Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime), targetPosition.y - toleranceY, targetPosition.y + toleranceY))
+                //{
+                //    posY = Mathf.Lerp(mainPosition.y, targetPosition.y, Mathf.Max(cameraTrackingSpeed) * Time.deltaTime);
+                //}
+                //else
+                //{
+                //    posY = Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime);
+                //}
+
+                posY = Mathf.Lerp(mainPosition.y, targetPosition.y, (cameraTrackingSpeed / yTrackingDampening) * Time.deltaTime);
 
                 mainPosition = new Vector3(
                     posX,

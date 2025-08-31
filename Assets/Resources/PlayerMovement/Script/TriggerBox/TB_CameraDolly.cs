@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 public class TB_CameraPosition : MonoBehaviour

@@ -4,12 +4,6 @@ public class CameraControl : MonoBehaviour
 {
     public Transform target;
     public GameObject player;
-    private PlayerController pc;
-
-    private void Awake()
-    {
-        pc = player.GetComponent<PlayerController>();
-    }
 
     void Update()
     {
