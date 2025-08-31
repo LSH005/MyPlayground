@@ -2447,7 +2447,7 @@ MonoBehaviour:
   triggerBoxID: 0
   activationDelay: 0
   DeactivationDistance: 0
-  isDisposable: 0
+  isDisposable: 1
   compareTag: Player
 --- !u!4 &1178127739
 Transform:
@@ -4215,7 +4215,7 @@ GameObject:
   - component: {fileID: 1740596689}
   - component: {fileID: 1740596686}
   m_Layer: 0
-  m_Name: TB_CameraRotate
+  m_Name: TB_CameraRotationTracking
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4308,12 +4308,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740596685}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5884c4e4d76daac4ba22589d692df02b, type: 3}
+  m_Script: {fileID: 11500000, guid: 51b5604e930472e45b566da7c63f454c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   compareTag: Player
-  targetPosition: {x: 0, y: 90, z: 0}
-  duration: 1
 --- !u!1 &1838424395
 GameObject:
   m_ObjectHideFlags: 0
