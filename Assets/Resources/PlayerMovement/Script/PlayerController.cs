@@ -298,10 +298,10 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(0f, -1f);
                 inputHoldTime = 0f;
 
-                if (isGrounded || !isTouchingWall || (isFacingRight && moveInput < 0) || (!isFacingRight && moveInput > 0))
+                if (isGrounded || !isTouchingWall || (isFacingRight && moveInput < 0) || (!isFacingRight && moveInput > 0) || Input.GetKeyDown(KeyCode.S))
                 {
                     // 월 킥 해제 조건 :
-                    // 땅에 닿음 || 벽에서 떨어짐 || 오른쪽 벽에 붙어 A 누르기 || 왼쪽 벽에 붙어 D 누르기
+                    // 땅에 닿음 || 벽에서 떨어짐 || 오른쪽 벽에 붙어 A 누르기 || 왼쪽 벽에 붙어 D 누르기 || S 누르기
                     isWallKicking = false;
                     anim.SetBool("isWallKicking", false);
                     Flip();
