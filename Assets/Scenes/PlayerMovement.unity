@@ -4212,9 +4212,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1740596688}
   - component: {fileID: 1740596687}
+  - component: {fileID: 1740596689}
   - component: {fileID: 1740596686}
   m_Layer: 0
-  m_Name: TB_Camera_test
+  m_Name: TB_CameraRotate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4278,7 +4279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSignalSender: 1
-  triggerBoxID: 0
+  triggerBoxID: 1
   activationDelay: 0
   DeactivationDistance: 0
   isDisposable: 0
@@ -4292,12 +4293,27 @@ Transform:
   m_GameObject: {fileID: 1740596685}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.11, y: -0.68, z: 0}
+  m_LocalPosition: {x: 15.46, y: -2.9, z: 0}
   m_LocalScale: {x: 3.35, y: 3.57, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1740596689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740596685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5884c4e4d76daac4ba22589d692df02b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  compareTag: Player
+  targetPosition: {x: 0, y: 90, z: 0}
+  duration: 1
 --- !u!1 &1838424395
 GameObject:
   m_ObjectHideFlags: 0
