@@ -4467,6 +4467,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2078579943}
   - component: {fileID: 2078579942}
+  - component: {fileID: 2078579944}
   - component: {fileID: 2078579941}
   m_Layer: 0
   m_Name: TriggerBox_Position
@@ -4533,7 +4534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSignalSender: 1
-  triggerBoxID: 0
+  triggerBoxID: 1
   activationDelay: 0
   DeactivationDistance: 0
   isDisposable: 0
@@ -4547,12 +4548,27 @@ Transform:
   m_GameObject: {fileID: 2078579940}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.029308483}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 15.58, y: 1.68, z: 0}
+  m_LocalScale: {x: 2.4, y: 4.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2078579944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078579940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a804fcf17102e542bff31a44f9c3899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  compareTag: Player
+  targetPosition: {x: 16, y: 1}
+  duration: 0.2
 --- !u!1 &2097965994
 GameObject:
   m_ObjectHideFlags: 0

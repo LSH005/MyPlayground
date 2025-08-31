@@ -167,7 +167,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : 각도 - 기간
+    /// 인수 : 각도 - 지속시간
     /// </summary>
     public static void RotateTo(Vector3 targetRotation, float duration)
     {
@@ -296,7 +296,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : Z좌표 - 기간
+    /// 인수 : Z좌표 - 지속시간
     /// </summary>
     public static void PositionZoom(float targetZ, float duration)
     {
@@ -327,7 +327,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : 최대 거리 - 주기 - 기간
+    /// 인수 : 최대 거리 - 주기 - 지속시간
     /// </summary>
     public static void PositionShaking(float intensity, float period, float duration)
     {
@@ -373,7 +373,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : 최대 각도 - 주기 - 기간
+    /// 인수 : 최대 각도 - 주기 - 지속시간
     /// </summary>
     public static void RotationShaking(float intensity, float period, float duration)
     {
@@ -429,7 +429,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : 목표 FOV - 기간
+    /// 인수 : 목표 FOV - 지속시간
     /// </summary>
     public static void SetFOV(float targetFOV, float duration)
     {
@@ -458,7 +458,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// 인수 : 목표 FOV 오프셋 - 확장 기간 - 축소 기간
+    /// 인수 : 목표 FOV 오프셋 - 확장 지속시간 - 축소 지속시간
     /// </summary>
     public static void ExplodingFOV(float targetFOV, float durationIn, float durationOut)
     {
