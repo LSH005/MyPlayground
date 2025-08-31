@@ -2446,7 +2446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec924ae955e511e40bab3714de58a38d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSignalSender: 1
+  isSignalSender: 0
   triggerBoxID: 0
   activationDelay: 0
   DeactivationDistance: 0
@@ -4311,12 +4311,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740596685}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25304bfae327358439e640a4115984d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 51b5604e930472e45b566da7c63f454c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   compareTag: Player
   trackTargetTag: Player
-  offset: {x: 0, y: 2, z: 0}
+  offset: {x: 0, y: 0, z: 0}
   shouldRetryFinding: 1
 --- !u!1 &1838424395
 GameObject:
