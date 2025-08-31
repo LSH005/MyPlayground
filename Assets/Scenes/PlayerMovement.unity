@@ -4218,7 +4218,7 @@ GameObject:
   - component: {fileID: 1740596689}
   - component: {fileID: 1740596686}
   m_Layer: 0
-  m_Name: TB_CameraPositionTracking
+  m_Name: TB_CameraPositionZoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4311,13 +4311,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740596685}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51b5604e930472e45b566da7c63f454c, type: 3}
+  m_Script: {fileID: 11500000, guid: 41a0b300066e5ee4a9a7e3a53b4e26ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   compareTag: Player
-  trackTargetTag: Player
-  offset: {x: 0, y: 0, z: 0}
-  shouldRetryFinding: 1
+  targetZ: 20
+  duration: 1
 --- !u!1 &1838424395
 GameObject:
   m_ObjectHideFlags: 0
