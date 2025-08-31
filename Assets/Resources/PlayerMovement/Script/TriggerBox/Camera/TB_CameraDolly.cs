@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TB_CameraPosition : MonoBehaviour
+public class TB_CameraDolly : MonoBehaviour
 {
     [Header("еб╠в")]
     public string compareTag = "Player";
