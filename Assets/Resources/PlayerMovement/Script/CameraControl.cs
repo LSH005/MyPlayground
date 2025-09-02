@@ -22,7 +22,7 @@ public class CameraControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             CameraMovement.TargetTracking(target, new Vector3(0, 6f, 0));
-            CameraMovement.RotationTracking(target, Vector3.zero);
+            CameraMovement.RotationTracking(target, new Vector3(0, -2, 0));
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4))
