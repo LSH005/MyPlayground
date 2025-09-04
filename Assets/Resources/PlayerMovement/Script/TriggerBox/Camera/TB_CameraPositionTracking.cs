@@ -6,7 +6,7 @@ public class TB_CameraPositionTracking : MonoBehaviour
     public string compareTag = "Player";
 
     [Header("À§Ä¡")]
-    public Vector3 targetPosition;
+    public Vector2 targetPosition;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
