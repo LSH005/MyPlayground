@@ -8,25 +8,27 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 15f;
     public float coyoteTime = 0.1f;
     public float quickTrunTime = 0.15f;
-    [Header("Debuff")]
+    [Header("움직임 상태 이상")]
     public bool enableReversal = false;
     public bool disableMove = false;
     public bool disableWallKick = false;
     public bool disableSlide = false;
     public bool disableJump = false;
     public float moveSpeedMultiplier = 1f;
-    [Header("Ground")]
+    [Header("지상 체크 위치")]
     //public Transform groundCheck;
     public Transform groundCheckLeft;
     public Transform groundCheckCenter;
     public Transform groundCheckRight;
     public LayerMask groundLayer;
     public float groundCheckRadius = 0.2f;
-    [Header("Wall")]
+    [Header("벽 체크 위치")]
     public Transform wallCheckEyes;
     public Transform wallCheckFeet;
     public LayerMask wallLayer;
     public float wallCheckRadius = 0.2f;
+    [Header("외부조작기")]
+    public bool disableControl = false;
 
     private float wallRunStiffnessTimeCounter = 0;
     private float AirborneTimeCounter = 0;
@@ -127,7 +129,7 @@ public class PlayerController : MonoBehaviour
             if (isQuickTurning) return;
         }
 
-        if (!disableMove)
+        if (!disableMove && !disableControl)
         {
             if (Input.GetKey(KeyCode.A)) moveInput = -moveSpeedMultiplier;
             else if (Input.GetKey(KeyCode.D)) moveInput = moveSpeedMultiplier;
@@ -235,7 +237,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // 점프
-        if (!disableJump)
+        if (!disableJump && !disableControl)
         {
             if (Input.GetKey(KeyCode.Space) && coyoteTimeCounter > 0f)
             {
@@ -424,6 +426,41 @@ public class PlayerController : MonoBehaviour
     bool CheckFlipOutput()
     {
         return (moveInput > 0 && !isFacingRight) || (moveInput < 0 && isFacingRight);
+    }
+
+    public void DisableControl(bool LookRight, Vector2 playerPosition)
+    {
+        disableControl = true;
+
+        if (isSliding)
+        {
+            isSliding = false;
+            anim.SetBool("isSliding", false);
+        }
+        if (isWallKicking)
+        {
+            isWallKicking = false;
+            anim.SetBool("isWallKicking", false);
+            wallRunStiffnessTimeCounter = 0.1f;
+        }
+
+        if (LookRight)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            isFacingRight = true;
+        }
+        else
+        {
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            isFacingRight = false;
+        }
+
+        transform.position = new Vector3(playerPosition.x, playerPosition.y, transform.position.z);
+    }
+
+    public void EnableContorl()
+    {
+        disableControl = false;
     }
 
     void OnDrawGizmosSelected()

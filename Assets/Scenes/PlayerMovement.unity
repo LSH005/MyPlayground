@@ -2700,11 +2700,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTag: Player
+  playerPosition: {x: 24, y: -2.7}
+  facingRight: 1
   keyMarker: {fileID: 915408537}
-  dialogueBubble: {fileID: 0}
+  dialogueBubble: {fileID: 4603416599823742836, guid: de14c13d6505dea4d97d0066db8e808e, type: 3}
   Dialogue:
   - {fileID: 11400000, guid: 5c83590416296d44e8b272d3b3f15355, type: 2}
-  startDialogueIndex: 0
+  DialogueIndex: 0
   isMultiConversation: 1
 --- !u!1 &829305886
 GameObject:
@@ -4504,6 +4506,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   wallCheckRadius: 0.05
+  disableControl: 0
 --- !u!95 &1354029066
 Animator:
   serializedVersion: 5
