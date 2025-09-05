@@ -49,6 +49,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Speech Bubble
+    uniqueID: 22657581
+    locked: 0
   - name: Curtain
     uniqueID: 2685749479
     locked: 0
