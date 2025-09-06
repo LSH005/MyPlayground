@@ -129,15 +129,18 @@ public class PlayerController : MonoBehaviour
             if (isQuickTurning) return;
         }
 
-        if (!disableMove && !disableControl)
+        if (!disableControl)
         {
-            if (Input.GetKey(KeyCode.A)) moveInput = -moveSpeedMultiplier;
-            else if (Input.GetKey(KeyCode.D)) moveInput = moveSpeedMultiplier;
-            else moveInput = 0;
+            if (!disableMove)
+            {
+                if (Input.GetKey(KeyCode.A)) moveInput = -moveSpeedMultiplier;
+                else if (Input.GetKey(KeyCode.D)) moveInput = moveSpeedMultiplier;
+                else moveInput = 0;
 
-            if (enableReversal) moveInput = -moveInput;
+                if (enableReversal) moveInput = -moveInput;
+            }
+            else moveInput = 0;
         }
-        else moveInput = 0;
 
         // 제 4대 방향키 동작 코드
 
@@ -431,6 +434,7 @@ public class PlayerController : MonoBehaviour
     public void DisableControl(bool LookRight, float playerHorizontalPosition)
     {
         disableControl = true;
+        moveInput = 0;
 
         if (isSliding)
         {
@@ -461,6 +465,17 @@ public class PlayerController : MonoBehaviour
     public void EnableContorl()
     {
         disableControl = false;
+    }
+
+    public void RunTo(bool isRight)
+    {
+        if (isRight) moveInput = 1;
+        else moveInput = -1;
+    }
+
+    public void StopRunning()
+    {
+        moveInput = 0;
     }
 
     void OnDrawGizmosSelected()
