@@ -428,7 +428,7 @@ public class PlayerController : MonoBehaviour
         return (moveInput > 0 && !isFacingRight) || (moveInput < 0 && isFacingRight);
     }
 
-    public void DisableControl(bool LookRight, Vector2 playerPosition)
+    public void DisableControl(bool LookRight, float playerHorizontalPosition)
     {
         disableControl = true;
 
@@ -455,7 +455,7 @@ public class PlayerController : MonoBehaviour
             isFacingRight = false;
         }
 
-        transform.position = new Vector3(playerPosition.x, playerPosition.y, transform.position.z);
+        transform.position = new Vector3(playerHorizontalPosition, transform.position.y, transform.position.z);
     }
 
     public void EnableContorl()

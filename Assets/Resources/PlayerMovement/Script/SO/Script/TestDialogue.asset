@@ -17,23 +17,23 @@ MonoBehaviour:
     bubbleBodyOffset: 0
     isTailDown: 1
     sentence:
-    - "\uBC18\uAC11\uB2E4."
-    - "\uBC18\uAC11\uBC18\uAC11\uB2E4."
+    - "\uC720\uC6D4 \uD65C\uC9DD \uD3B8 \uBC30\uAF43\uB4E4 \uBC11\uC5D0 \uC694 \uCF69\uC0C8\uC57C"
+    - ...............
     intervalTime: 0.05
     canSkip: 0
     autoSkip: 0
     autoSkipIntervalTime: 0
-    typingSound: {fileID: 0}
+    typingSound: {fileID: 8300000, guid: cabacbe55fa3b6648bff62da2ea69464, type: 3}
   - bubblePosition: {x: 24, y: -6.1, z: 0}
     bubbleBodyOffset: 1
     isTailDown: 0
     sentence:
-    - "\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141\u3141"
-    - "\uC751\uC751\uC751."
+    - "\uB2E4\uB78C\uC950 \uD5CC \uCCC7\uBC14\uD034\uC5D0 \uD0C0\uACE0\uD30C"
+    - "\uB2ED \uCF69\uD325 \uD6D4\uCE5C \uC9D1\uC0AC"
     - 3
     - 444444444444444444444444
     intervalTime: 0.05
     canSkip: 0
     autoSkip: 0
     autoSkipIntervalTime: 0
-    typingSound: {fileID: 0}
+    typingSound: {fileID: 8300000, guid: cabacbe55fa3b6648bff62da2ea69464, type: 3}

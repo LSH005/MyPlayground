@@ -1456,7 +1456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   compareTag: Player
-  targetPosition: {x: -130, y: -11}
+  targetPosition: {x: -130, y: -11, z: 15}
 --- !u!114 &442697573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2700,14 +2700,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTag: Player
-  playerPosition: {x: 24, y: -2.7}
+  playerHorizontalPosition: 24
   facingRight: 1
   keyMarker: {fileID: 915408537}
   dialogueBubble: {fileID: 4603416599823742836, guid: de14c13d6505dea4d97d0066db8e808e, type: 3}
   Dialogue:
   - {fileID: 11400000, guid: 5c83590416296d44e8b272d3b3f15355, type: 2}
-  DialogueIndex: 0
-  isMultiConversation: 1
+  dialogueRepetition: 0
+  singleDialogue: 0
+  isMultiDialogue: 1
+  functionNameToCall: DoSomethingSpecific
 --- !u!1 &829305886
 GameObject:
   m_ObjectHideFlags: 0
