@@ -1,6 +1,6 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
-using System.Reflection;
 
 [RequireComponent(typeof(AudioSource), typeof(BoxCollider2D))]
 public class DialogueBoxMain : MonoBehaviour
@@ -19,7 +19,7 @@ public class DialogueBoxMain : MonoBehaviour
     public bool singleDialogue = false;     // isMultiDialogue 가 false일 경우, 하나의 대화열을 무한히 반복시킬지에 대한 여부. false일 경우 동작하지 않음
     public bool isMultiDialogue = true;     // 여러 번 작동시켜 Dialogue 배열을 순차적으로 재생시킬지에 대한 여부. false면 대화는 하나만 작동함.
     [Header("작동 후 설정")]
-    public string functionNameToCall = "DoSomethingSpecific";
+    public string functionNameToCall = "OnDialogueEnd";
 
     private bool isDialogueActive = false;
     private Dialogue currentDialogue;
@@ -41,6 +41,12 @@ public class DialogueBoxMain : MonoBehaviour
     private void Start()
     {
         MonoBehaviour[] allScripts = GetComponents<MonoBehaviour>();
+
+        onDialogueEndScripts = allScripts.Where(
+                script =>
+                script != this && // 현재 스크립트 제외
+                script.GetType().GetMethod(functionNameToCall) != null // 특정 함수가 있는지 확인
+                ).ToArray();
     }
 
 
@@ -69,7 +75,7 @@ public class DialogueBoxMain : MonoBehaviour
                         keyMarker.SetActive(false);
                         StartDialogue();
                     }
-                    else Debug.LogError($"");
+                    else Debug.LogError($"{other.name} 에 playerController 없음");
                 }
             }
         }
@@ -172,6 +178,18 @@ public class DialogueBoxMain : MonoBehaviour
     // 출력 끝에 실행할 매서드
     private void EndDialogue()
     {
+        Destroy(bubbleScript.gameObject);
+
         dialogueRepetition++;
+
+        if (onDialogueEndScripts.Length > 0)
+        {
+            object[] parameters = new object[] { dialogueRepetition };
+
+            foreach (MonoBehaviour script in onDialogueEndScripts)
+            {
+                script.GetType().GetMethod(functionNameToCall).Invoke(script, parameters);
+            }
+        }
     }
 }

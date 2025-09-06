@@ -2468,6 +2468,7 @@ GameObject:
   m_Component:
   - component: {fileID: 827810721}
   - component: {fileID: 827810724}
+  - component: {fileID: 827810725}
   - component: {fileID: 827810720}
   - component: {fileID: 827810723}
   - component: {fileID: 827810722}
@@ -2709,7 +2710,23 @@ MonoBehaviour:
   dialogueRepetition: 0
   singleDialogue: 0
   isMultiDialogue: 1
-  functionNameToCall: DoSomethingSpecific
+  functionNameToCall: OnDialogueEnd
+--- !u!114 &827810725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827810719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9faf12a505072ec479ca8bf826eb1770, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useExclude: 0
+  minExcludeCount: 0
+  maxExcludeCount: 0
+  playerTag: Player
 --- !u!1 &829305886
 GameObject:
   m_ObjectHideFlags: 0
