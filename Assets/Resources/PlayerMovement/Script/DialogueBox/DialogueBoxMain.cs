@@ -15,13 +15,13 @@ public class DialogueBoxMain : MonoBehaviour
     public GameObject dialogueBubble;   // 대화 말풍선 프리팹. 이 프리팹에는 "DialogueBubbleReference" 스크립트가 필요함.
     [Header("대화 정보 SO")]
     public Dialogue[] Dialogue; // SO 배열
-    public int dialogueRepetition;  // Dialogue (SO 배열) 인덱스. 대화가 끝나면 증가함.
-    public bool singleDialogue = false;     // isMultiDialogue 가 false일 경우, 하나의 대화열을 무한히 반복시킬지에 대한 여부. false일 경우 동작하지 않음
-    public bool isMultiDialogue = true;     // 여러 번 작동시켜 Dialogue 배열을 순차적으로 재생시킬지에 대한 여부. false면 대화는 하나만 작동함.
+    public int dialogueRepetition;  // Dialogue (SO 배열) 인덱스. 대화가 끝나면 1 증가함.
+    public bool repeatDialogue = false;     //dialogueRepetition 이 증가하지 않아 하나의 대화열을 무한히 반복시킬지에 대한 여부. true여야 작동.
     [Header("작동 후 설정")]
     public string functionNameToCall = "OnDialogueEnd";
 
     private bool isDialogueActive = false;
+    private bool isDialogueEnd = false;
     private Dialogue currentDialogue;
     private DialogueBubbleReference bubbleScript;
     private AudioSource AudioSource;
@@ -49,35 +49,34 @@ public class DialogueBoxMain : MonoBehaviour
                 ).ToArray();
     }
 
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        keyMarker.SetActive(true);
-    }
-
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (isDialogueEnd) return;
         keyMarker.SetActive(false);
     }
 
     void OnTriggerStay2D(Collider2D other)
     {
+        if (isDialogueEnd || isDialogueActive) return;
+
         if (other.tag == playerTag)
         {
-            if (!isDialogueActive)
+            if (Input.GetKey(KeyCode.F))    // 상호작용 시작
             {
-                if (Input.GetKeyDown(KeyCode.F))    // 상호작용 시작
+                playerController = other.GetComponent<PlayerController>();
+                if (playerController != null)
                 {
-                    playerController = other.GetComponent<PlayerController>();
-                    if (playerController != null)
-                    {
-                        playerController.DisableControl(facingRight, playerHorizontalPosition);
-                        keyMarker.SetActive(false);
-                        StartDialogue();
-                    }
-                    else Debug.LogError($"{other.name} 에 playerController 없음");
+                    playerController.DisableControl(facingRight, playerHorizontalPosition);
+                    keyMarker.SetActive(false);
+                    StartDialogue();
                 }
+                else Debug.LogError($"{other.name} 에 playerController 없음");
             }
+            
+        }
+        if (!isDialogueActive)
+        {
+            keyMarker.SetActive(true);
         }
     }
 
@@ -178,17 +177,26 @@ public class DialogueBoxMain : MonoBehaviour
     // 출력 끝에 실행할 매서드
     private void EndDialogue()
     {
+        isDialogueActive = false;
+        StopCoroutine(TypeSentenceCoroutine());
         Destroy(bubbleScript.gameObject);
 
-        dialogueRepetition++;
+        if (!repeatDialogue)
+        {
+            dialogueRepetition++;
+
+            if (dialogueRepetition >= Dialogue.Length)
+            {
+                isDialogueEnd = true;
+                Destroy(keyMarker);
+            }
+        }
 
         if (onDialogueEndScripts.Length > 0)
         {
-            object[] parameters = new object[] { dialogueRepetition };
-
             foreach (MonoBehaviour script in onDialogueEndScripts)
             {
-                script.GetType().GetMethod(functionNameToCall).Invoke(script, parameters);
+                script.GetType().GetMethod(functionNameToCall).Invoke(script, new object[] { dialogueRepetition });
             }
         }
     }
