@@ -2706,7 +2706,7 @@ MonoBehaviour:
   keyMarker: {fileID: 915408537}
   dialogueBubble: {fileID: 4603416599823742836, guid: de14c13d6505dea4d97d0066db8e808e, type: 3}
   Dialogue:
-  - {fileID: 11400000, guid: 5c83590416296d44e8b272d3b3f15355, type: 2}
+  - {fileID: 11400000, guid: bbc691c5f3263fd43b68210263bde571, type: 2}
   dialogueRepetition: 0
   repeatDialogue: 0
   functionNameToCall: OnDialogueEnd

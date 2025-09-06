@@ -144,7 +144,7 @@ public class DialogueBoxMain : MonoBehaviour
                             while (charIndex < fullDialogueText.Length)
                             {
                                 yield return null;
-                                if (Input.GetKeyDown(KeyCode.F))
+                                if (Input.GetKeyDown(KeyCode.F) && dialogueSection.canSkip)
                                 {
                                     bubbleScript.SetText(fullDialogueText);
                                     break;
@@ -162,7 +162,14 @@ public class DialogueBoxMain : MonoBehaviour
                                 timer += Time.deltaTime;
                             }
                             yield return null;
-                            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.F));
+                            if (dialogueSection.autoSkip)
+                            {
+                                yield return new WaitForSeconds(dialogueSection.autoSkipIntervalTime);
+                            }
+                            else
+                            {
+                                yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.F));
+                            }
                         }
                         else Debug.LogError("문자열이 비었음");
                     }
