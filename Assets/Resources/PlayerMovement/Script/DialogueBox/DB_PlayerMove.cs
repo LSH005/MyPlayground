@@ -11,7 +11,7 @@ public class DB_PlayerMove : MonoBehaviour
     [Header("플레이어 태그")]
     public string playerTag = "Player";
 
-    public void OnDialogueEnd(int dialogueRepetition)
+    public void OnDialogueEnd(uint dialogueRepetition)
     {
         if (useExclude)
         {

@@ -5,18 +5,13 @@ using System.Collections;
 public class TriggerBoxMain : MonoBehaviour
 {
     [Header("트리거박스 ID")]
-    [Tooltip("트리거 신호를 보낼지 결정함.\nfalse일 경우 신호를 보내지 않고 자신만 비활성화함.")]
-    public bool isSignalSender = true;  
-    [Tooltip("트리거박스 ID 값 (uint)")]
-    public uint triggerBoxID = 0;
+    public bool isSignalSender = true;  //트리거 신호를 보낼지 결정. false일 경우 신호를 보내지 않고 자신만 비활성화함. 
+    public uint triggerBoxID = 0;   // 트리거박스 ID
 
     [Header("동작 설정")]
-    [Tooltip("Scene 로드 이후 동작이 활성화되는 시간")]
-    public float activationDelay = 0;
-    [Tooltip("동일한 ID에서 비활성화 신호를 보낼 최소 거리")]
-    public float DeactivationDistance = 0;
-    [Tooltip("일회용인지에 대한 여부\ntrue면 한 번 작동 이후 이 트리거박스는 제거됨.")]
-    public bool isDisposable = false;
+    public float activationDelay = 0;   // Scene 로드 이후 동작이 활성화되는 시간
+    public float DeactivationDistance = 0;  // 동일한 ID에서 비활성화 신호를 보낼 최소 거리
+    public bool isDisposable = false;   // 일회용인지에 대한 여부 true면 한 번 작동 이후 이 트리거박스는 제거됨.
 
     [Header("태그")]
     public string compareTag = "Player";

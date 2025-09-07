@@ -15,10 +15,10 @@ public class DialogueBoxMain : MonoBehaviour
     public GameObject dialogueBubble;   // 대화 말풍선 프리팹. 이 프리팹에는 "DialogueBubbleReference" 스크립트가 필요함.
     [Header("대화 정보 SO")]
     public Dialogue[] Dialogue; // SO 배열
-    public int dialogueRepetition;  // Dialogue (SO 배열) 인덱스. 대화가 끝나면 1 증가함.
+    public uint dialogueRepetition;  // Dialogue (SO 배열) 인덱스. 대화가 끝나면 1 증가함.
     public bool repeatDialogue = false;     //dialogueRepetition 이 증가하지 않아 하나의 대화열을 무한히 반복시킬지에 대한 여부. true여야 작동.
     [Header("작동 후 설정")]
-    public string functionNameToCall = "OnDialogueEnd";
+    public string functionNameToCall = "OnDialogueEnd";     // 같은 오브젝트에 있는 모든 MonoBehaviour스크립트에 포함된 함수를 부를 때, 작동시킬 함수 이름.
 
     private bool isDialogueActive = false;
     private bool isDialogueEnd = false;
