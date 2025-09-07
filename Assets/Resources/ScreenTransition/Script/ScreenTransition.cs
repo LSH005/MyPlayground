@@ -8,6 +8,8 @@ public class ScreenTransition : MonoBehaviour
 
     public static ScreenTransition Instance;
     public static bool isTransitioning = false;
+    public static bool isRoading = false;
+    public static bool isNextSceneLoaded = false;
 
     private GameObject[] uiObjects;
 
@@ -34,7 +36,9 @@ public class ScreenTransition : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    /// <summary>
+    /// 인수 : 목표 Scene - 로딩 Scene - 페이드 커튼 색상 - 페이드 아웃 이전 대기 시간 - 페이드 아웃 지속시간 - 보장할 최소 로딩 시간 - 페이드 인 지속시간 - 페이드 아웃 후 대기 시간
+    /// </summary>
     static public void ScreenTransitionGoto(string SceneName, string LoadingSceneName, Color CurtainColor, float WaitTime1, float FadeOutTime, float LoadingTime, float FadeInTime, float WaitTime2)
     {
         if (Instance == null)
@@ -70,6 +74,9 @@ public class ScreenTransition : MonoBehaviour
         }
 
         isTransitioning = true;
+        isRoading = false;
+        isNextSceneLoaded = false;
+
         StartCoroutine(StartTransition());
     }
 
@@ -123,6 +130,8 @@ public class ScreenTransition : MonoBehaviour
 
     private IEnumerator Loading()
     {
+        isRoading = true;
+
         //씬 로딩 즉시 시작
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(SceneName);
         asyncLoad.allowSceneActivation = false; // 로딩 완료 후 즉시 활성화 방지
@@ -137,11 +146,14 @@ public class ScreenTransition : MonoBehaviour
         // 로딩 완료 후 목표 씬으로 전환
         asyncLoad.allowSceneActivation = true;
         yield return null;
+        isRoading = false;
         StartCoroutine(FinishTransition());
     }
 
     private IEnumerator FinishTransition()
     {
+        isNextSceneLoaded = true;
+
         StartCoroutine(FadeCurtain(curtainRenderer, 1f, 0f));
         SetUI();
         SetUIObjectsActive(false);

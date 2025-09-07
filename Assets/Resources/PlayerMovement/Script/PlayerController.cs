@@ -433,6 +433,11 @@ public class PlayerController : MonoBehaviour
 
     public void DisableControl(bool LookRight, float playerHorizontalPosition)
     {
+        if (disableControl)
+        {
+            return;
+        }
+
         disableControl = true;
         moveInput = 0;
 
@@ -469,8 +474,16 @@ public class PlayerController : MonoBehaviour
 
     public void RunTo(bool isRight)
     {
-        if (isRight) moveInput = 1;
-        else moveInput = -1;
+        if (isRight)
+        {
+            moveInput = 1;
+            DisableControl(true, transform.position.x);
+        }
+        else
+        {
+            moveInput = -1;
+            DisableControl(false, transform.position.x);
+        }
     }
 
     public void StopRunning()
