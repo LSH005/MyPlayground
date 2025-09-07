@@ -7,8 +7,8 @@ public class ScreenTransition : MonoBehaviour
     public GameObject Curtain;
 
     public static ScreenTransition Instance;
+    public static bool isTransitioning = false;
 
-    private bool isTransitioning = false;
     private GameObject[] uiObjects;
 
     private string SceneName;
@@ -35,44 +35,6 @@ public class ScreenTransition : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_1", Color.black, 0f, 0f, 7f, 0f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_2", new Color32(255, 214, 117, 255), 0f, 0.5f, 7f, 0.5f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_3", Color.gray, 0f, 0.5f, 7f, 0.5f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_4", Color.black, 0f, 0.5f, 7f, 0.5f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_5", Color.black, 0f, 0.5f, 8f, 0.5f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_6", Color.black, 0f, 0.5f, 9f, 0.5f, 0f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            ScreenTransitionGoto("ScreenTransition", "LoadingScreen_7", Color.black, 0f, 0.5f, 7f, 0.5f, 0f);
-        }
-    }
-
     static public void ScreenTransitionGoto(string SceneName, string LoadingSceneName, Color CurtainColor, float WaitTime1, float FadeOutTime, float LoadingTime, float FadeInTime, float WaitTime2)
     {
         if (Instance == null)
@@ -81,7 +43,7 @@ public class ScreenTransition : MonoBehaviour
             return;
         }
 
-        if (Instance.isTransitioning)
+        if (isTransitioning)
         {
             return;
         }
@@ -95,17 +57,12 @@ public class ScreenTransition : MonoBehaviour
         Instance.FadeInTime = FadeInTime;
         Instance.WaitTime2 = WaitTime2;
 
-        if (Instance.isTransitioning) return;
+        if (isTransitioning) return;
         Instance.StartTransitionInternal();
     }
 
     private void StartTransitionInternal()
     {
-        //if (isTransitioning)
-        //{
-        //    return;
-        //}
-
         if (Curtain == null)
         {
             Debug.LogError("CurtainÇÁ¸®ÆÕ ¾øÀ½");

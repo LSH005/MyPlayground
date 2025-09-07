@@ -516,4 +516,14 @@ public class CameraMovement : MonoBehaviour
         ExplodingFovOffset = 0.0f;
         explodingFovCoroutine = null;
     }
+
+    public static void AllStop()
+    {
+        Instance.StopAllCoroutines();
+
+        Instance.isRotating = false;
+        Instance.isMoving = false;
+        Instance.isTrackingRotation = false;
+        Instance.isTrackingPosition = false;
+    }
 }
