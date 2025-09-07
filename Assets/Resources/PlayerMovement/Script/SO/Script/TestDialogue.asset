@@ -22,7 +22,7 @@ MonoBehaviour:
     - "\uC720\uC6D4 \uD65C\uC9DD \uD3B8 \uBC30\uAF43\uB4E4 \uBC11\uC5D0 \uC694 \uCF69\uC0C8\uC57C"
     intervalTime: 0.05
     canSkip: 1
-    autoSkip: 1
+    autoSkip: 0
     autoSkipIntervalTime: 0
     typingSound: {fileID: 8300000, guid: c4f5b95bf94786a4386fa4920ebc0ebe, type: 3}
   - bubblePosition: {x: 26, y: -6.1, z: 0}
@@ -33,7 +33,7 @@ MonoBehaviour:
     - "\uBD80\uC5CC \uD30C\uAE40\uCE58\uC804 \uD565\uB4EF"
     intervalTime: 0.25
     canSkip: 1
-    autoSkip: 1
+    autoSkip: 0
     autoSkipIntervalTime: 0
     typingSound: {fileID: 8300000, guid: c4f5b95bf94786a4386fa4920ebc0ebe, type: 3}
   - bubblePosition: {x: 24, y: -6.1, z: 0}
@@ -49,6 +49,6 @@ MonoBehaviour:
       \uCC28\uAC8C \uBA39\uC5B4\uC57C \uD2B9\uBCC4\uD55C \uB9DB\uC774 \uC798 \uD45C\uD604\uB41C\uB2E4"
     intervalTime: 0.05
     canSkip: 1
-    autoSkip: 1
+    autoSkip: 0
     autoSkipIntervalTime: 0
     typingSound: {fileID: 8300000, guid: cabacbe55fa3b6648bff62da2ea69464, type: 3}

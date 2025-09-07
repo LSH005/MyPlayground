@@ -70,8 +70,6 @@ public class SceneTransitionBox : MonoBehaviour
             {
                 DontDestroyOnLoad(this.gameObject);
 
-                playerController.DisableControl(false, playerController.transform.position.x);
-
                 if (start_shouldMove)
                 {
                     if (start_shouldGoRight) playerController.RunTo(true);
@@ -80,7 +78,7 @@ public class SceneTransitionBox : MonoBehaviour
 
                 ScreenTransition.ScreenTransitionGoto(targetSceneName, loadingSceneName, CurtainColor, WaitTime1, FadeOutTime, LoadingTime, FadeInTime, WaitTime2);
             }
-            else Debug.LogError($"{compareTag} 를 태그로 하는 오브젝트에 PlayerController 없음");
+            else Debug.LogError($"(이동 전) {compareTag} 를 태그로 하는 오브젝트에 PlayerController 없음");
         }
     }
 
@@ -88,7 +86,50 @@ public class SceneTransitionBox : MonoBehaviour
     {
         if (scene.name == targetSceneName)
         {
-            
+            StartCoroutine(EndMove());
         }
+    }
+
+    private IEnumerator EndMove()
+    {
+        GameObject playerObject = GameObject.FindGameObjectWithTag(compareTag);
+        if (playerObject != null)
+        {
+            playerController = playerObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.transform.position = playerPosition;
+
+                if (end_shouldMove)
+                {
+                    if (waitMoveDuration > 0)
+                    {
+                        playerController.DisableControl(true, playerPosition.x);
+
+                        float elapsedTime = 0f;
+                        while (elapsedTime < waitMoveDuration)
+                        {
+                            yield return null;
+                            playerController.transform.position = playerPosition;
+                            elapsedTime += Time.deltaTime;
+                        }
+                    }
+
+                    if (end_shouldGoRight) playerController.RunTo(true);
+                    else playerController.RunTo(false);
+
+                    yield return new WaitForSeconds(moveDuration);
+
+                    playerController.EnableContorl();
+                }
+            }
+            else Debug.LogError($"(이동 후) {compareTag} 를 태그로 하는 오브젝트에 PlayerController 없음");
+        }
+        else
+        {
+            // 플레이어가 없으면 컷신이라 판단하겠음.
+        }
+
+        Destroy(this.gameObject);
     }
 }

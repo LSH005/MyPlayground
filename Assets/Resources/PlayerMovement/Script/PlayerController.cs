@@ -474,15 +474,28 @@ public class PlayerController : MonoBehaviour
 
     public void RunTo(bool isRight)
     {
+        disableControl = true;
+        moveInput = 0;
+
+        if (isSliding)
+        {
+            isSliding = false;
+            anim.SetBool("isSliding", false);
+        }
+        if (isWallKicking)
+        {
+            isWallKicking = false;
+            anim.SetBool("isWallKicking", false);
+            wallRunStiffnessTimeCounter = 0.1f;
+        }
+
         if (isRight)
         {
             moveInput = 1;
-            DisableControl(true, transform.position.x);
         }
         else
         {
             moveInput = -1;
-            DisableControl(false, transform.position.x);
         }
     }
 
