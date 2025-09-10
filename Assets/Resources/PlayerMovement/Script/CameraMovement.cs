@@ -36,20 +36,23 @@ public class CameraMovement : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-        mainPosition = transform.position;
-        currentZ = transform.position.z;
         cam = GetComponent<Camera>();
 
-        if (cam == null)
+        if (cam != null)
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+
+            mainPosition = transform.position;
+            currentZ = transform.position.z;
+        }
+        else
         {
             Debug.LogWarning("이 오브젝트는 카메라가 아님");
             enabled = false;
