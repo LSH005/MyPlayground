@@ -10,39 +10,38 @@ public class ME_CameraMovement : MonoBehaviour
     {
         trackingPosition.z = transform.position.z;
     }
-
-
     void Update()
     {
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
-        if (scrollInput > 0f)
+        if (scrollInput != 0)
         {
-            cameraControlSpeed += 1;
-            cameraControlSpeed = Mathf.Clamp(cameraControlSpeed, 0, 60);
-        }
-        else if (scrollInput < 0f)
-        {
-            cameraControlSpeed -= 1;
+            if (scrollInput > 0f) cameraControlSpeed += 1;
+            else cameraControlSpeed -= 1;
+
             cameraControlSpeed = Mathf.Clamp(cameraControlSpeed, 0, 60);
         }
 
-        if (Input.GetKey(KeyCode.W)) trackingPosition.y += cameraControlSpeed * Time.deltaTime;
-        else if (Input.GetKey(KeyCode.S)) trackingPosition.y -= cameraControlSpeed * Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.D)) trackingPosition.x += cameraControlSpeed * Time.deltaTime;
-        else if (Input.GetKey(KeyCode.A)) trackingPosition.x -= cameraControlSpeed * Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
         {
-            trackingPosition.z -= cameraControlSpeed * Time.deltaTime;
-            trackingPosition.z = Mathf.Clamp(trackingPosition.z, -25, -5);
+            if (Input.GetKey(KeyCode.W)) trackingPosition.y += cameraControlSpeed * Time.deltaTime;
+            else trackingPosition.y -= cameraControlSpeed * Time.deltaTime;
         }
-        else if (Input.GetKey(KeyCode.Q))
+
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A))
         {
-            trackingPosition.z += cameraControlSpeed * Time.deltaTime;
-            trackingPosition.z = Mathf.Clamp(trackingPosition.z, -25, -5);
+            if (Input.GetKey(KeyCode.D)) trackingPosition.x += cameraControlSpeed * Time.deltaTime;
+            else trackingPosition.x -= cameraControlSpeed * Time.deltaTime;
         }
+
+        if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Q))
+        {
+            if (Input.GetKey(KeyCode.E)) trackingPosition.z -= cameraControlSpeed * Time.deltaTime;
+            else trackingPosition.z += cameraControlSpeed * Time.deltaTime;
+
+            trackingPosition.z = Mathf.Clamp(trackingPosition.z, -180, -5);
+        }
+        
 
         if (Vector3.Distance(transform.position, trackingPosition) > 0.02f)
         {
