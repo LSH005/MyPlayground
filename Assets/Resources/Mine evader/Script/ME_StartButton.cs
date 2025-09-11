@@ -25,7 +25,7 @@ public class ME_StartButton : MonoBehaviour
         }
         else
         {
-            ME_GameManager.Instance.StartGame();
+            ME_GameManager.Instance.SetGame();
             spriteRenderer.color = endButtonColor;
             buttonText.text = "ÁßÁö";
         }

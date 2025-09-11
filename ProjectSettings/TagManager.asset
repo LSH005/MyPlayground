@@ -9,6 +9,7 @@ TagManager:
   - Tracker
   - Target
   - UI
+  - Tile
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - ground
   - Secret
   - Button
-  - 
+  - Tile
   - 
   - 
   - 

@@ -179,7 +179,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "15 \xD7 15"
+  m_text: "015 \xD7 015"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 43f7d2e5ea996a24cab92489db3748ed, type: 2}
   m_sharedMaterial: {fileID: 4967356991681808779, guid: 43f7d2e5ea996a24cab92489db3748ed, type: 2}
@@ -2560,7 +2560,7 @@ MonoBehaviour:
   rayMaxDistance: 40
   buttonLayer:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 12288
 --- !u!114 &2025770702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2577,6 +2577,9 @@ MonoBehaviour:
   tilePrefab: {fileID: 5101931638176843002, guid: 7f81217a4f9a0484f97880b883929a3e, type: 3}
   gameSize: 15
   bombProbability: 15
+  startRadius: 3.5
+  hasClickedOnce: 0
+  isInOperation: 0
 --- !u!1 &2036292331
 GameObject:
   m_ObjectHideFlags: 0

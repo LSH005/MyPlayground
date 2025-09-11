@@ -20,6 +20,7 @@ public class ME_BombProbabilityHandler : MonoBehaviour
 
     public void LeftClicked()
     {
+        if (gameManager.isInOperation) return;
         gameManager.AddBombProbability(addValue);
         UpdateBombProbabilityText();
     }
@@ -27,6 +28,6 @@ public class ME_BombProbabilityHandler : MonoBehaviour
 
     public void UpdateBombProbabilityText()
     {
-        bombProbabilityText.text = $"{gameManager.bombProbability} %";
+        bombProbabilityText.text = $"{gameManager.bombProbability:D2} %";
     }
 }

@@ -20,12 +20,13 @@ public class ME_GameSizeHandler : MonoBehaviour
 
     public void LeftClicked()
     {
+        if (gameManager.isInOperation) return;
         gameManager.AddGameSize(addValue);
         UpdateSizeText();
     }
 
     public void UpdateSizeText()
     {
-        gameSizeText.text = $"{gameManager.gameSize} ¡¿ {gameManager.gameSize}";
+        gameSizeText.text = $"{gameManager.gameSize:D3} ¡¿ {gameManager.gameSize:D3}";
     }
 }
