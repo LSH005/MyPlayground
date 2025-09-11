@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b887fbbf0b3d7c4b93595280536c585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalTile: {fileID: 21300000, guid: c6e50ce4241f1df4caaf076b7b360fdb, type: 3}
   flagTile: {fileID: 21300000, guid: 7c5b28b549a86614896accc54ae1b44a, type: 3}
   openedTile: {fileID: 21300000, guid: 55fd41c176674ce4e93edd1afff789ae, type: 3}
   mineTile: {fileID: 21300000, guid: 819a81c7a9d68f74bb21386459df290b, type: 3}

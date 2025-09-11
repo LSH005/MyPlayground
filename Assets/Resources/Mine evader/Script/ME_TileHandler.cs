@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ME_TileHandler : MonoBehaviour
 {
+    public Sprite normalTile;
     public Sprite flagTile;
     public Sprite openedTile;
     public Sprite mineTile;
@@ -83,12 +84,25 @@ public class ME_TileHandler : MonoBehaviour
 
     public void RightClicked()
     {
-
+        if (!isOpened)
+        {
+            SwitchFlag();
+        }
     }
 
     public void SwitchFlag()
     {
+        if (onFlag)
+        {
+            spriteRenderer.sprite = normalTile;
+            GameObject newFlag = Instantiate(flag, transform.position, Quaternion.identity);
+        }
+        else
+        {
+            spriteRenderer.sprite = flagTile;
+        }
 
+        onFlag = !onFlag;
     }
 
     public void SetTileNumber()
