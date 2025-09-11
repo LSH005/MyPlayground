@@ -6,8 +6,6 @@ using UnityEngine;
 public class ME_GameManager : MonoBehaviour
 {
     public static ME_GameManager Instance { get; private set; }
-    public static List<GameObject> allTiles = new List<GameObject>();
-    public static List<GameObject> allBombTiles = new List<GameObject>();
 
     public Transform tileLoot;
     public GameObject tilePrefab;
@@ -17,6 +15,8 @@ public class ME_GameManager : MonoBehaviour
     public bool hasClickedOnce = false;
     public bool isInOperation = false;
 
+    private List<GameObject> allTiles = new List<GameObject>();
+    private List<GameObject> allBombTiles = new List<GameObject>();
 
     private void Awake()
     {
