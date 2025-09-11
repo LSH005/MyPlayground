@@ -32,13 +32,10 @@ public class ME_TileHandler : MonoBehaviour
         numberText.text = string.Empty;
     }
 
-    void Update()
-    {
-        
-    }
-
     public void LeftClicked()
     {
+        if (!gameManager.isInOperation) return;
+
         if (!gameManager.hasClickedOnce)
         {
             gameManager.SetBombTiles(transform.position);
@@ -84,6 +81,8 @@ public class ME_TileHandler : MonoBehaviour
 
     public void RightClicked()
     {
+        if (!gameManager.isInOperation) return;
+
         if (!isOpened)
         {
             SwitchFlag();
@@ -134,6 +133,21 @@ public class ME_TileHandler : MonoBehaviour
             else if (tileNumber == 8) numberText.color = new Color32(0, 0, 0, 255);
 
             numberText.transform.localScale = Vector3.zero;
+        }
+    }
+
+    public void MineDisclosure()
+    {
+        if (isBomb)
+        {
+            if (onFlag)
+            {
+                spriteRenderer.sprite = flagOnMineTile;
+            }
+            else
+            {
+                spriteRenderer.sprite = mineTile;
+            }
         }
     }
 }

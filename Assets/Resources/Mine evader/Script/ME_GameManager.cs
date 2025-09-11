@@ -74,7 +74,7 @@ public class ME_GameManager : MonoBehaviour
         int bombCount = (int)((gameSize * gameSize) * (bombProbability / 100f));
 
         potentialBombTiles = potentialBombTiles.OrderBy(x => Random.value).ToList();
-        int countToTake = Mathf.Clamp(bombCount, 0, potentialBombTiles.Count);
+        int countToTake = Mathf.Clamp(bombCount, 0, potentialBombTiles.Count-1);
 
         allBombTiles = potentialBombTiles.Take(countToTake).ToList();
 
@@ -109,7 +109,17 @@ public class ME_GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        isInOperation = false;
 
+        foreach (GameObject currentTile in allTiles)
+        {
+            ME_TileHandler tileHandler = currentTile.GetComponent<ME_TileHandler>();
+
+            if (tileHandler != null)
+            {
+                tileHandler.MineDisclosure();
+            }
+        }
     }
 
 
