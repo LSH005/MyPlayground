@@ -10,6 +10,7 @@ public class ME_TileHandler : MonoBehaviour
     public Sprite mineTile;
     public Sprite flagOnMineTile;
     public Sprite greenMineTile;
+    public Sprite originMineTile;
     public GameObject flag;
     public GameObject fireWork;
     public TextMeshPro numberText;
@@ -19,6 +20,7 @@ public class ME_TileHandler : MonoBehaviour
     public bool isBomb = false;
     public bool isOpened = false;
     public bool onFlag = false;
+    public bool isOriginBomb = false;
     public int tileNumber = 0;
 
     private float lastClickTime;
@@ -53,6 +55,7 @@ public class ME_TileHandler : MonoBehaviour
         
         if (isBomb)
         {
+            isOriginBomb = true;
             gameManager.GameOver();
             return;
         }
@@ -195,7 +198,14 @@ public class ME_TileHandler : MonoBehaviour
             }
             else
             {
-                spriteRenderer.sprite = mineTile;
+                if (isOriginBomb)
+                {
+                    spriteRenderer.sprite = originMineTile;
+                }
+                else
+                {
+                    spriteRenderer.sprite = mineTile;
+                }
             }
         }
     }
