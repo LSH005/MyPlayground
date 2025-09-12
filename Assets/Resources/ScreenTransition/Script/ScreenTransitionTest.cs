@@ -38,5 +38,15 @@ public class ScreenTransitionTest : MonoBehaviour
         {
             ScreenTransition.ScreenTransitionGoto("ScreenTransition", "LoadingScreen_7", Color.black, 0f, 0.5f, 7f, 0.5f, 0f);
         }
+        
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            ScreenTransition.ScreenTransitionGoto("ScreenTransition", "LoadingScreen_8", Color.black, 0f, 0.5f, 7.5f, 0.5f, 0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            ScreenTransition.ScreenTransitionGoto("ScreenTransition", "LoadingScreen_9", Color.black, 0f, 0.5f, 7.5f, 0.5f, 0f);
+        }
     }
 }

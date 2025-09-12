@@ -216,6 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 326532869}
   - component: {fileID: 326532870}
+  - component: {fileID: 326532871}
   m_Layer: 0
   m_Name: ScreenTransition
   m_TagString: Untagged
@@ -251,6 +252,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Curtain: {fileID: 5704956168128234921, guid: b39bb77db099f554abaf474fa6452695, type: 3}
+--- !u!114 &326532871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326532868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fa26d164c4e8c341b56ef5d294932bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1265040864
 GameObject:
   m_ObjectHideFlags: 0
