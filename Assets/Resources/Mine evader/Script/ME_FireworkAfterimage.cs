@@ -1,31 +1,30 @@
 using UnityEngine;
 using System.Collections;
 
-public class ME_FlagAction : MonoBehaviour
+public class ME_FireworkAfterimage : MonoBehaviour
 {
-    public float WaitTime = 0.5f;
-    public float ActionTime = 1f;
-    private Rigidbody2D rb2d;
+    private SpriteRenderer spr;
 
     private void Awake()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        spr = GetComponent<SpriteRenderer>();
     }
 
-    void Start()
+    public void Setting(Color32 myColor, Vector3 scale)
     {
-        rb2d.velocity = new Vector2(Random.Range(-3f, 3f), Random.Range(3f, 6f));
-        rb2d.angularVelocity = Random.Range(-180f, 180f);
+        transform.localScale = scale;
+        spr.color = myColor;
+
         StartCoroutine(ShrinkOverTime());
     }
 
     private IEnumerator ShrinkOverTime()
     {
-        yield return new WaitForSeconds(WaitTime);
-
         Vector3 startScale = transform.localScale;
         Vector3 endScale = Vector3.zero;
-        float elapsedTime = 0f;
+
+        float elapsedTime = 0;
+        float ActionTime = Mathf.Min(transform.localScale.x, transform.localScale.y);
 
         while (elapsedTime < ActionTime)
         {

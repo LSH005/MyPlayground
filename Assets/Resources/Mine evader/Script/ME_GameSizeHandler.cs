@@ -27,6 +27,6 @@ public class ME_GameSizeHandler : MonoBehaviour
 
     public void UpdateSizeText()
     {
-        gameSizeText.text = $"{gameManager.gameSize:D3} ¡¿ {gameManager.gameSize:D3}";
+        gameSizeText.text = $"{gameManager.gameSize:D2} ¡¿ {gameManager.gameSize:D2}";
     }
 }

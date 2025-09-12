@@ -1,12 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 
 public class ME_GameManager : MonoBehaviour
 {
     public static ME_GameManager Instance { get; private set; }
-    public static List<GameObject> allNonBombTiles = new List<GameObject>();
 
     public Transform tileLoot;
     public GameObject tilePrefab;
@@ -18,6 +19,8 @@ public class ME_GameManager : MonoBehaviour
 
     private List<GameObject> allTiles = new List<GameObject>();
     private List<GameObject> allBombTiles = new List<GameObject>();
+    private List<GameObject> allNonBombTiles = new List<GameObject>();
+    private Coroutine fireworkCoroutine;
 
     private void Awake()
     {
@@ -28,7 +31,7 @@ public class ME_GameManager : MonoBehaviour
     public void AddGameSize(int value)
     {
         gameSize += value;
-        gameSize = Mathf.Clamp(gameSize, 10, 200);
+        gameSize = Mathf.Clamp(gameSize, 10, 50);
     }
 
     public void AddBombProbability(int value)
@@ -110,6 +113,59 @@ public class ME_GameManager : MonoBehaviour
         allNonBombTiles = allTiles.Except(allBombTiles).ToList();
     }
 
+    public void RemoveNonBombTiles(GameObject target)
+    {
+        allNonBombTiles.Remove(target);
+
+        if (allNonBombTiles.Count == 0)
+        {
+            GameWin();
+        }
+    }
+
+    public void GameWin()
+    {
+        isInOperation = false;
+
+        foreach (GameObject currentTile in allBombTiles)
+        {
+            ME_TileHandler tileHandler = currentTile.GetComponent<ME_TileHandler>();
+
+            if (tileHandler != null)
+            {
+                tileHandler.MineDisclosureAtWin();
+            }
+        }
+
+        fireworkCoroutine = StartCoroutine(FireWork());
+    }
+
+    IEnumerator FireWork()
+    {
+        while (true)
+        {
+            ME_TileHandler tileHandler = GetRandomTileFromArray(allTiles).GetComponent<ME_TileHandler>();
+
+            if (tileHandler != null)
+            {
+                tileHandler.FireWork();
+            }
+
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    public GameObject GetRandomTileFromArray(List<GameObject> allTiles)
+    {
+        if (allTiles == null || allTiles.Count == 0)
+        {
+            Debug.LogWarning("배열이 비었음");
+            return null;
+        }
+
+        return allTiles[Random.Range(0, allTiles.Count)];
+    }
+
     public void GameOver()
     {
         isInOperation = false;
@@ -131,6 +187,12 @@ public class ME_GameManager : MonoBehaviour
         hasClickedOnce = false;
         isInOperation = false;
         ClearAllTiles();
+
+        if (fireworkCoroutine != null)
+        {
+            StopCoroutine(fireworkCoroutine);
+            fireworkCoroutine = null;
+        }
     }
 
     public void ClearAllTiles()
@@ -144,5 +206,7 @@ public class ME_GameManager : MonoBehaviour
         }
 
         allTiles.Clear();
+        allBombTiles.Clear();
+        allNonBombTiles.Clear();
     }
 }

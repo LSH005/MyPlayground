@@ -54,6 +54,7 @@ MonoBehaviour:
   flagOnMineTile: {fileID: 21300000, guid: 51d50ee84b8630541882aa8e3ef9fc82, type: 3}
   greenMineTile: {fileID: 21300000, guid: de964c5c368b22549ad6c72bccc2c0f2, type: 3}
   flag: {fileID: 2647392690781588825, guid: 1b2d6696f9d2adf49a5d95dbf5315b8c, type: 3}
+  fireWork: {fileID: 7462499777115876452, guid: afc1ad7af484f424ba37a97c6cc83156, type: 3}
   numberText: {fileID: 3823980099767074767}
   tileLayer:
     serializedVersion: 2

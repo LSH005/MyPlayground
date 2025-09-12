@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class ME_TileHandler : MonoBehaviour
     public Sprite flagOnMineTile;
     public Sprite greenMineTile;
     public GameObject flag;
+    public GameObject fireWork;
     public TextMeshPro numberText;
     public LayerMask tileLayer;
 
@@ -86,6 +88,8 @@ public class ME_TileHandler : MonoBehaviour
             }
             else
             {
+                //StartCoroutine(ChainOpenTile());
+
                 Collider[] colliders = Physics.OverlapSphere(transform.position, 1f, tileLayer);
                 foreach (Collider col in colliders)
                 {
@@ -98,6 +102,27 @@ public class ME_TileHandler : MonoBehaviour
                             tileHandler.OpenTile();
                         }
                     }
+                }
+            }
+
+            gameManager.RemoveNonBombTiles(this.gameObject);
+        }
+    }
+
+    IEnumerator ChainOpenTile()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 0.55f, tileLayer);
+        foreach (Collider col in colliders)
+        {
+            ME_TileHandler tileHandler = col.GetComponent<ME_TileHandler>();
+
+            if (tileHandler != null)
+            {
+                if (!tileHandler.isOpened)
+                {
+                    tileHandler.OpenTile();
                 }
             }
         }
@@ -172,6 +197,21 @@ public class ME_TileHandler : MonoBehaviour
             {
                 spriteRenderer.sprite = mineTile;
             }
+        }
+    }
+
+    public void MineDisclosureAtWin()
+    {
+        spriteRenderer.sprite = greenMineTile;
+    }
+
+    public void FireWork()
+    {
+        int repetitions = Random.Range(3, 7);
+
+        for (int i = 0; i < repetitions; i++)
+        {
+            Instantiate(fireWork, transform.position, transform.rotation);
         }
     }
 }

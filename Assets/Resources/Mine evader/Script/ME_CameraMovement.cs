@@ -39,7 +39,7 @@ public class ME_CameraMovement : MonoBehaviour
             if (Input.GetKey(KeyCode.E)) trackingPosition.z -= cameraControlSpeed * Time.deltaTime;
             else trackingPosition.z += cameraControlSpeed * Time.deltaTime;
 
-            trackingPosition.z = Mathf.Clamp(trackingPosition.z, -180, -5);
+            trackingPosition.z = Mathf.Clamp(trackingPosition.z, -55, -5);
         }
         
 

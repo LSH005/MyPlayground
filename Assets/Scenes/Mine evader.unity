@@ -1654,7 +1654,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.45817018, g: 0.6166676, b: 0.6792453, a: 0}
+  m_BackGroundColor: {r: 0.5157974, g: 0.6320754, b: 0.5537818, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2557,7 +2557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requiredPressTime: 0.5
-  rayMaxDistance: 40
+  rayMaxDistance: 100
   buttonLayer:
     serializedVersion: 2
     m_Bits: 12288
@@ -2577,7 +2577,6 @@ MonoBehaviour:
   tilePrefab: {fileID: 5101931638176843002, guid: 7f81217a4f9a0484f97880b883929a3e, type: 3}
   gameSize: 15
   bombProbability: 15
-  startRadius: 3.5
   hasClickedOnce: 0
   isInOperation: 0
 --- !u!1 &2036292331
