@@ -6,6 +6,7 @@ using UnityEngine;
 public class ME_GameManager : MonoBehaviour
 {
     public static ME_GameManager Instance { get; private set; }
+    public static List<GameObject> allNonBombTiles = new List<GameObject>();
 
     public Transform tileLoot;
     public GameObject tilePrefab;
@@ -105,6 +106,8 @@ public class ME_GameManager : MonoBehaviour
                 tileHandler.SetTileNumber();
             }
         }
+
+        allNonBombTiles = allTiles.Except(allBombTiles).ToList();
     }
 
     public void GameOver()

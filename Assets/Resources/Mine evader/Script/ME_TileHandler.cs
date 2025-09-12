@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ME_TileHandler : MonoBehaviour
@@ -9,6 +8,7 @@ public class ME_TileHandler : MonoBehaviour
     public Sprite openedTile;
     public Sprite mineTile;
     public Sprite flagOnMineTile;
+    public Sprite greenMineTile;
     public GameObject flag;
     public TextMeshPro numberText;
     public LayerMask tileLayer;
@@ -19,6 +19,7 @@ public class ME_TileHandler : MonoBehaviour
     public bool onFlag = false;
     public int tileNumber = 0;
 
+    private float lastClickTime;
     private ME_GameManager gameManager;
     private SpriteRenderer spriteRenderer;
 
@@ -46,33 +47,56 @@ public class ME_TileHandler : MonoBehaviour
 
     public void OpenTile()
     {
-        if (isOpened || onFlag) return;
-        isOpened = true;
-
+        if (onFlag) return;
+        
         if (isBomb)
         {
             gameManager.GameOver();
             return;
         }
 
-        spriteRenderer.sprite = openedTile;
-
-        if (tileNumber != 0)
+        if (isOpened)
         {
-            numberText.transform.localScale = Vector3.one;
+            if (Time.time - lastClickTime < 0.4f)
+            {
+                Collider[] colliders = Physics.OverlapSphere(transform.position, 1f, tileLayer);
+                foreach (Collider col in colliders)
+                {
+                    ME_TileHandler tileHandler = col.GetComponent<ME_TileHandler>();
+
+                    if (tileHandler != null)
+                    {
+                        if (!tileHandler.isOpened)
+                        {
+                            tileHandler.OpenTile();
+                        }
+                    }
+                }
+            }
+            lastClickTime = Time.time;
         }
         else
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 1f, tileLayer);
-            foreach (Collider col in colliders)
-            {
-                ME_TileHandler tileHandler = col.GetComponent<ME_TileHandler>();
+            isOpened = true;
+            spriteRenderer.sprite = openedTile;
 
-                if (tileHandler != null)
+            if (tileNumber != 0)
+            {
+                numberText.transform.localScale = Vector3.one;
+            }
+            else
+            {
+                Collider[] colliders = Physics.OverlapSphere(transform.position, 1f, tileLayer);
+                foreach (Collider col in colliders)
                 {
-                    if (!tileHandler.isOpened)
+                    ME_TileHandler tileHandler = col.GetComponent<ME_TileHandler>();
+
+                    if (tileHandler != null)
                     {
-                        tileHandler.OpenTile();
+                        if (!tileHandler.isOpened)
+                        {
+                            tileHandler.OpenTile();
+                        }
                     }
                 }
             }
